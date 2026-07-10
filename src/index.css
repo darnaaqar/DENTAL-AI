@@ -1,12 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --color-background: #0e1417;
-  --color-surface: #1a2123;
+  --color-background: #000a12;
+  --color-surface: #041b2b;
   --color-primary: #aeecff;
   --color-secondary: #83ecff;
   --color-accent: #14d8ff;
-  --color-outline: #3c494d;
+  --color-outline: #0b2f47;
   
   --font-sans: "Inter", "IBM Plex Sans Arabic", ui-sans-serif, system-ui, sans-serif;
 }

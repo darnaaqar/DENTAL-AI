@@ -46,7 +46,7 @@ export default function Home({onNavigate, locale}: HomeProps) {
       </motion.section>
 
       {/* Interactive 3D Holographic Stage */}
-      <section className="relative h-80 flex items-center justify-center overflow-hidden">
+      <section className="relative h-[340px] flex items-center justify-center overflow-hidden">
         {/* HUD Scan Effect Container */}
         <div className="absolute inset-0 pointer-events-none opacity-20">
           <div className="absolute inset-0 hud-scanline"></div>
@@ -54,40 +54,87 @@ export default function Home({onNavigate, locale}: HomeProps) {
         </div>
 
         {/* Concentric glowing rings stage */}
-        <div className="absolute bottom-6 w-80 h-24 flex items-center justify-center pointer-events-none">
-          <div className="absolute w-[240px] h-14 rounded-full border border-[#14d8ff]/45 bg-gradient-to-t from-[#14d8ff]/15 to-transparent shadow-[0_0_25px_rgba(20,216,255,0.3)] transform -rotate-[10deg] skew-x-[15deg]"></div>
-          <div className="absolute w-[200px] h-10 rounded-full border border-[#03d4ed]/60 shadow-[0_0_15px_rgba(3,212,237,0.35)] transform -rotate-[10deg] skew-x-[15deg]"></div>
-          <div className="absolute w-[160px] h-7 rounded-full bg-[#14d8ff]/25 blur-md transform -rotate-[10deg] skew-x-[15deg]"></div>
+        <div className="absolute bottom-4 w-full flex flex-col items-center justify-center pointer-events-none z-10">
+          {/* Faint outermost ring */}
+          <div className="absolute w-[330px] h-14 rounded-full border border-[#14d8ff]/10"></div>
+          
+          {/* Middle dashed/tick ring */}
+          <div className="absolute w-[280px] h-[34px] rounded-full border border-dashed border-[#14d8ff]/30"></div>
+          
+          {/* Outer glowing floor ring */}
+          <div className="absolute w-[240px] h-[30px] rounded-full border-2 border-[#14d8ff]/40 shadow-[0_0_20px_rgba(20,216,255,0.4)]"></div>
+
+          {/* Glow base shadow */}
+          <div className="absolute w-[190px] h-6 rounded-full bg-[#14d8ff]/25 blur-md"></div>
+          
+          {/* 3D Cylinder Platform */}
+          <div className="relative w-[160px] h-10 flex flex-col items-center justify-start mt-4">
+            {/* Top glowing surface */}
+            <div className="absolute top-0 w-full h-5 rounded-full bg-gradient-to-b from-[#14d8ff] to-[#03d4ed]/40 border border-white/50 shadow-[0_0_25px_rgba(20,216,255,0.95),inset_0_1px_1px_rgba(255,255,255,0.5)] z-20">
+              {/* Inner brighter core */}
+              <div className="absolute inset-[3px] rounded-full bg-white/80 blur-[1px] shadow-[0_0_12px_rgba(20,216,255,0.9)]"></div>
+            </div>
+            
+            {/* Front curved face (extrusion height) */}
+            <div className="absolute top-2 w-full h-5 bg-gradient-to-b from-[#03d4ed]/80 to-[#001f27]/90 border-x border-b border-[#14d8ff]/70 rounded-b-full shadow-[0_8px_16px_rgba(0,0,0,0.7)] z-10 flex items-center justify-around overflow-hidden px-5">
+              {/* Vertical neon light notches for futuristic detail */}
+              <div className="w-[1.5px] h-2 bg-[#14d8ff] shadow-[0_0_4px_#14d8ff] opacity-80"></div>
+              <div className="w-[1.5px] h-2 bg-[#14d8ff] shadow-[0_0_4px_#14d8ff] opacity-80"></div>
+              <div className="w-[1.5px] h-2 bg-[#14d8ff] shadow-[0_0_4px_#14d8ff] opacity-80"></div>
+              <div className="w-[1.5px] h-2 bg-[#14d8ff] shadow-[0_0_4px_#14d8ff] opacity-80"></div>
+              <div className="w-[1.5px] h-2 bg-[#14d8ff] shadow-[0_0_4px_#14d8ff] opacity-80"></div>
+            </div>
+          </div>
+          
+          {/* Upward spotlight beam */}
+          <div className="absolute bottom-5 w-32 h-24 bg-gradient-to-t from-[#14d8ff]/35 to-transparent blur-md rounded-full transform -translate-y-2"></div>
         </div>
+
+        {/* Rotating Futuristic HUD Ring background */}
+        <motion.div 
+          animate={{rotate: 360}}
+          transition={{duration: 25, repeat: Infinity, ease: "linear"}}
+          className="absolute w-[320px] h-[320px] flex items-center justify-center opacity-25 pointer-events-none z-0"
+        >
+          <img 
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDh4lb4p54bnmUtkV_mfM7kl1ekflE8O7EThW8Jtx7JY4FX7Agi2SIV_d97GJRtwR0unjCwvpWE7oZCXPmez50-j_UY2ndV71pfXPxndDJgxnGIRsCU-gAEuNK3iKNARZO-TWctfaviPcZfAs-qNEcrBzN2Ke2K12TAz8wA2DzsPZwA-ux9zK_GXpznrB_P9vLP8vIYafXbjexhpWCULunwg_M3I-qRw7n9SgsA71pQMdqs6ALdigSAkM3YsXz7MSsJEjUCjnf_zH0"
+            className="w-full h-full scale-105 filter drop-shadow-[0_0_20px_rgba(20,216,255,0.45)]"
+            alt="HUD Background"
+          />
+        </motion.div>
 
         {/* Central 3D Wireframe Glowing Tooth */}
         <motion.div 
-          animate={{y: [0, -8, 0]}}
+          animate={{
+            y: [2, -6, 2],
+            filter: [
+              "drop-shadow(0 0 25px rgba(20,216,255,0.45))",
+              "drop-shadow(0 0 45px rgba(20,216,255,0.75))",
+              "drop-shadow(0 0 25px rgba(20,216,255,0.45))"
+            ]
+          }}
           transition={{duration: 4, repeat: Infinity, ease: "easeInOut"}}
-          className="relative z-10"
+          className="relative z-10 -mt-10"
         >
           <img 
             src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8IhJhiFXgCJoUCUhdnc489Z5-t5f73w8_vrm1xpYXedmkJ03q-koJmRfbOUzS_KQB0wsM6NaXDIHtJwV0K5zDDPGeUiBqxJ1vahCOg4L_EOFtulSHKST682LV0CZ5esHQYRSk_GGGGfRSBitnzecYBWkSCsJoqy8_nsg06W7xEsAhpHHHrHBwqXslITJ85aSDIxTyNuG8ThD74NSybCASpY9V3MVWaet_3GWL3yhamaVQj4dbDGJVwpsxnrt-nByMJbCOw2YSxps"
-            className="w-52 h-52 drop-shadow-[0_0_35px_rgba(20,216,255,0.5)]"
+            className="w-48 h-48 object-contain"
             alt="Holographic Tooth"
           />
         </motion.div>
 
-        {/* Faint orbit rotation circle behind the nodes */}
-        <div className="absolute w-[280px] h-[280px] rounded-full border border-white/5 opacity-40 pointer-events-none"></div>
-
         {/* Floating Interactive Orbit Nodes */}
-        <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute inset-0 pointer-events-none z-25">
           {/* Node 1 (Heart Tooth): Top Left */}
           <motion.button
             onClick={() => onNavigate('services')}
             animate={{y: [0, -6, 0]}}
             transition={{duration: 3.5, repeat: Infinity, delay: 0, ease: "easeInOut"}}
-            className="absolute left-6 top-[22%] w-14 h-14 bg-[#09151c]/80 border border-[#14d8ff]/40 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(20,216,255,0.3)] pointer-events-auto cursor-pointer hover:scale-110 active:scale-95 transition-all duration-300"
+            className="absolute left-8 top-[16%] w-[60px] h-[60px] bg-[#09151c]/90 border border-[#14d8ff]/50 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(20,216,255,0.4)] pointer-events-auto cursor-pointer hover:scale-110 active:scale-95 transition-all duration-300"
           >
-            <svg viewBox="0 0 24 24" className="w-7 h-7 text-[#14d8ff]" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-              <path d="M12 7c-.6 0-.9.3-.9.9 0 .6.3.9.5 1.5.1.5.2.9.2.9s.1-.4.2-.9c.2-.6.5-.9.5-.9 0-.6-.3-.9-.9-.9z" strokeWidth="1" fill="#14d8ff" />
+            <svg viewBox="0 0 100 100" className="w-8 h-8 text-[#14d8ff]" fill="none" stroke="currentColor" strokeWidth="4">
+              <path d="M 50 25 C 40 10, 15 10, 15 35 C 15 60, 50 85, 50 85 C 50 85, 85 60, 85 35 C 85 10, 60 10, 50 25 Z" strokeLinejoin="round" strokeLinecap="round" />
+              <path d="M 50 35 C 43 35, 38 38, 38 45 C 38 52, 42 56, 44 64 C 44 67, 47 68, 49 67 C 50 66, 50 64, 50 62 C 50 64, 50 66, 51 67 C 53 68, 56 67, 56 64 C 58 56, 62 52, 62 45 C 62 38, 57 35, 50 35 Z" strokeWidth="2.5" strokeLinecap="round" />
             </svg>
           </motion.button>
 
@@ -96,12 +143,14 @@ export default function Home({onNavigate, locale}: HomeProps) {
             onClick={() => onNavigate('services')}
             animate={{y: [0, 5, 0]}}
             transition={{duration: 4, repeat: Infinity, delay: 0.8, ease: "easeInOut"}}
-            className="absolute left-2 bottom-[16%] w-14 h-14 bg-[#09151c]/80 border border-[#14d8ff]/40 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(20,216,255,0.3)] pointer-events-auto cursor-pointer hover:scale-110 active:scale-95 transition-all duration-300"
+            className="absolute left-4 bottom-[20%] w-[60px] h-[60px] bg-[#09151c]/90 border border-[#14d8ff]/50 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(20,216,255,0.4)] pointer-events-auto cursor-pointer hover:scale-110 active:scale-95 transition-all duration-300"
           >
-            <svg viewBox="0 0 24 24" className="w-7 h-7 text-[#14d8ff]" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <path d="M12 3c-2.5 0-3.5 1.5-3.5 4 0 2 1.5 3.5 2.5 6l-.5.5" strokeLinejoin="round" />
-              <path d="M15.5 7c0-2.5-1-4-3.5-4" strokeLinejoin="round" />
-              <path d="M12 11v9M9.5 13.5h5M9.5 16.5h5M10.5 19.5h3" strokeLinecap="round" />
+            <svg viewBox="0 0 100 100" className="w-8 h-8 text-[#14d8ff]" fill="none" stroke="currentColor" strokeWidth="4">
+              <path d="M 50 20 C 38 20, 32 23, 32 35 C 32 45, 38 48, 42 56 C 45 56, 55 56, 58 56 C 62 48, 68 45, 68 35 C 68 23, 62 20, 50 20 Z" strokeLinejoin="round" />
+              <path d="M 50 56 L 50 85" strokeWidth="5" strokeLinecap="round" />
+              <path d="M 40 64 L 60 64" strokeWidth="4" strokeLinecap="round" />
+              <path d="M 42 71 L 58 71" strokeWidth="4" strokeLinecap="round" />
+              <path d="M 44 78 L 56 78" strokeWidth="4" strokeLinecap="round" />
             </svg>
           </motion.button>
 
@@ -110,11 +159,12 @@ export default function Home({onNavigate, locale}: HomeProps) {
             onClick={() => onNavigate('services')}
             animate={{y: [0, -5, 0]}}
             transition={{duration: 3.8, repeat: Infinity, delay: 1.5, ease: "easeInOut"}}
-            className="absolute right-6 top-[12%] w-14 h-14 bg-[#09151c]/80 border border-[#14d8ff]/40 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(20,216,255,0.3)] pointer-events-auto cursor-pointer hover:scale-110 active:scale-95 transition-all duration-300"
+            className="absolute right-8 top-[16%] w-[60px] h-[60px] bg-[#09151c]/90 border border-[#14d8ff]/50 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(20,216,255,0.4)] pointer-events-auto cursor-pointer hover:scale-110 active:scale-95 transition-all duration-300"
           >
-            <svg viewBox="0 0 24 24" className="w-7 h-7 text-[#14d8ff]" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <path d="M12 3c-2.5 0-3.5 1.5-3.5 4c0 2 1.5 3.5 2.5 6s1.5-4 2.5-6c0-2.5-1-4-3.5-4z" strokeLinejoin="round" />
-              <path d="M5 19c2-2 5-1 7-4M4 20l-1 1" stroke-linecap="round" />
+            <svg viewBox="0 0 100 100" className="w-8 h-8 text-[#14d8ff]" fill="none" stroke="currentColor" strokeWidth="4">
+              <path d="M 50 20 C 38 20, 32 23, 32 35 C 32 45, 38 48, 42 56 C 44 60, 50 60, 50 55 C 50 60, 56 60, 58 56 C 62 48, 68 45, 68 35 C 68 23, 62 20, 50 20 Z" strokeLinejoin="round" />
+              <path d="M 22 78 C 22 45, 18 35, 30 25" strokeWidth="3" strokeLinecap="round" />
+              <path d="M 22 78 L 15 85" strokeWidth="4.5" strokeLinecap="round" />
             </svg>
           </motion.button>
 
@@ -123,11 +173,11 @@ export default function Home({onNavigate, locale}: HomeProps) {
             onClick={() => onNavigate('services')}
             animate={{y: [0, 6, 0]}}
             transition={{duration: 4.2, repeat: Infinity, delay: 2.2, ease: "easeInOut"}}
-            className="absolute right-2 bottom-[24%] w-14 h-14 bg-[#09151c]/80 border border-[#14d8ff]/40 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(20,216,255,0.3)] pointer-events-auto cursor-pointer hover:scale-110 active:scale-95 transition-all duration-300"
+            className="absolute right-4 bottom-[20%] w-[60px] h-[60px] bg-[#09151c]/90 border border-[#14d8ff]/50 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(20,216,255,0.4)] pointer-events-auto cursor-pointer hover:scale-110 active:scale-95 transition-all duration-300"
           >
-            <svg viewBox="0 0 24 24" className="w-7 h-7 text-[#14d8ff]" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <path d="M12 3C9.5 3 8.5 4.5 8.5 7c0 2.5 1.5 4 2.5 6.5.5 1.5 1 3 1 3s.5-1.5 1-3c1-2.5 2.5-4 2.5-6.5 0-2.5-1-4-3.5-4z" stroke-linejoin="round" />
-              <path d="M17 4l.3.9.9.3-.9.3-.3.9-.3-.9-.9-.3.9-.3z" fill="#14d8ff" stroke="none" />
+            <svg viewBox="0 0 100 100" className="w-8 h-8 text-[#14d8ff]" fill="none" stroke="currentColor" strokeWidth="4">
+              <path d="M 50 20 C 32 20, 23 25, 23 40 C 23 53, 30 60, 33 79 C 34 86, 41 88, 45 85 C 47 83, 50 81, 50 75 C 50 81, 53 81, 55 85 C 59 88, 66 86, 67 79 C 70 60, 77 53, 77 40 C 77 25, 68 20, 50 20 Z" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M 72 25 L 74 29 L 78 31 L 74 33 L 72 37 L 70 33 L 66 31 L 70 29 Z" fill="#14d8ff" stroke="none" />
             </svg>
           </motion.button>
         </div>
@@ -171,7 +221,7 @@ export default function Home({onNavigate, locale}: HomeProps) {
               <svg viewBox="0 0 24 24" className="w-10 h-10 text-[#14d8ff]" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M12 2C9 2 8 4 8 7c0 3 2 5 3 9.5.5 2.25 1 4.5 1 4.5s.5-2.25 1-4.5c1-4.5 3-6.5 3-9.5 0-3-1-5-4-5z" strokeLinejoin="round" />
                 <path d="M9.5 3C7.5 5 7.5 9 8.5 12C9 13.5 10 15 11 16.5" stroke="#03d4ed" strokeWidth="1.2" strokeDasharray="2,2" />
-                <path d="M12 2.5 A 3.5 4.5 0 0 1 15.5 7 C 15.5 9 14.5 11 13.5 13" stroke="#14d8ff" stroke-width="2" stroke-linecap="round" />
+                <path d="M12 2.5 A 3.5 4.5 0 0 1 15.5 7 C 15.5 9 14.5 11 13.5 13" stroke="#14d8ff" strokeWidth={2} strokeLinecap="round" />
               </svg>
             )
           },
@@ -181,8 +231,8 @@ export default function Home({onNavigate, locale}: HomeProps) {
             labelEn: 'Dental Implants',
             svg: (
               <svg viewBox="0 0 24 24" className="w-10 h-10 text-[#14d8ff]" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M12 2C9 2 8 4 8 7c0 3 2 5 3 9.5l-.5.5" stroke-linejoin="round" />
-                <path d="M16 7c0-3-1-5-4-5" stroke-linejoin="round" />
+                <path d="M12 2C9 2 8 4 8 7c0 3 2 5 3 9.5l-.5.5" strokeLinejoin="round" />
+                <path d="M16 7c0-3-1-5-4-5" strokeLinejoin="round" />
                 <path d="M12 11v10M10 14h4M10 17h4M11 20h2" strokeLinecap="round" />
               </svg>
             )
@@ -194,7 +244,7 @@ export default function Home({onNavigate, locale}: HomeProps) {
             svg: (
               <svg viewBox="0 0 24 24" className="w-10 h-10 text-[#14d8ff]" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M12 2C9 2 8 4 8 7c0 3 2 5 3 9.5.5 2.25 1 4.5 1 4.5s.5-2.25 1-4.5c1-4.5 3-6.5 3-9.5 0-3-1-5-4-5z" strokeLinejoin="round" />
-                <path d="M6 10c3 1.5 9 1.5 12 0" stroke="#14d8ff" stroke-width="2" stroke-linecap="round" />
+                <path d="M6 10c3 1.5 9 1.5 12 0" stroke="#14d8ff" strokeWidth={2} strokeLinecap="round" />
                 <rect x="11" y="9" width="2" height="3" fill="#14d8ff" stroke="none" />
                 <rect x="7.5" y="8" width="1.5" height="2.5" fill="#14d8ff" stroke="none" />
                 <rect x="15" y="8" width="1.5" height="2.5" fill="#14d8ff" stroke="none" />
@@ -239,7 +289,7 @@ export default function Home({onNavigate, locale}: HomeProps) {
           <div className="w-11 h-11 bg-white/10 rounded-xl flex items-center justify-center border border-white/20 ml-4">
             <svg viewBox="0 0 24 24" className="w-7 h-7 text-[#001f27]" fill="none" stroke="currentColor" strokeWidth="2.5">
               <rect x="3" y="4" width="18" height="18" rx="4" />
-              <path d="M16 2v4M8 2v4M3 10h18" stroke-linecap="round" />
+              <path d="M16 2v4M8 2v4M3 10h18" strokeLinecap="round" />
               <circle cx="8" cy="14" r="1.2" fill="currentColor" />
               <circle cx="12" cy="14" r="1.2" fill="currentColor" />
               <circle cx="16" cy="14" r="1.2" fill="currentColor" />

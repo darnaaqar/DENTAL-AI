@@ -123,10 +123,10 @@ export default function App() {
   const headerConfig = getHeaderConfig();
 
   return (
-    <div className="flex flex-col h-screen bg-[#0e1417] text-[#dde4e6] font-sans overflow-hidden" dir={isAr ? 'rtl' : 'ltr'}>
+    <div className="flex flex-col h-screen bg-gradient-to-b from-[#000a12] via-[#001724] to-[#000508] text-[#dde4e6] font-sans overflow-hidden" dir={isAr ? 'rtl' : 'ltr'}>
       
       {/* iOS-Style Status Bar and Header Container (Always left-to-right to match native phone frame design in the image) */}
-      <div className="w-full bg-[#0e1417]/95 backdrop-blur-2xl shrink-0 z-40 flex flex-col" dir="ltr">
+      <div className="w-full bg-[#000a12]/60 backdrop-blur-md shrink-0 z-40 flex flex-col" dir="ltr">
         {/* Status Bar */}
         <div className="h-10 px-6 flex justify-between items-center text-xs font-semibold text-white/90 select-none">
           {/* Time (9:41) */}
@@ -221,13 +221,13 @@ export default function App() {
       </div>
 
       {/* Main Content Area */}
-      <main className="flex-1 overflow-hidden relative flex flex-col bg-[#0e1417]">
+      <main className="flex-1 overflow-hidden relative flex flex-col bg-transparent">
         {renderContent()}
       </main>
 
       {/* Background Decorative Bloom */}
-      <div className="fixed top-[-10%] right-[-10%] w-[50%] h-[50%] bg-accent/5 rounded-full blur-[120px] pointer-events-none"></div>
-      <div className="fixed bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-accent/5 rounded-full blur-[120px] pointer-events-none"></div>
+      <div className="fixed top-[-10%] right-[-10%] w-[50%] h-[50%] bg-[#14d8ff]/10 rounded-full blur-[120px] pointer-events-none"></div>
+      <div className="fixed bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#14d8ff]/10 rounded-full blur-[120px] pointer-events-none"></div>
 
       {/* Slide-out Sidebar Drawer Drawer */}
       <AnimatePresence>
