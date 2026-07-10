@@ -1,4 +1,6 @@
-import {motion} from 'motion/react';
+import {useState} from 'react';
+import {motion, AnimatePresence} from 'motion/react';
+import {X, ExternalLink, Globe, Shield, RefreshCw, MessageSquare, Phone, Calendar, MapPin} from 'lucide-react';
 import {Tab} from '../types';
 
 interface HomeProps {
@@ -11,6 +13,7 @@ interface HomeProps {
 
 export default function Home({onNavigate, locale, settings, doctor, services}: HomeProps) {
   const isAr = locale === 'ar';
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
 
 
   return (
@@ -74,10 +77,23 @@ export default function Home({onNavigate, locale, settings, doctor, services}: H
 
       {/* Interactive 3D Holographic Stage */}
       <section className="relative h-[340px] flex items-center justify-center overflow-hidden">
-        {/* HUD Scan Effect Container */}
-        <div className="absolute inset-0 pointer-events-none opacity-20">
+        {/* HUD Scan Effect Container - Interactive Trigger Layer */}
+        <div 
+          id="hud-trigger-layer"
+          onClick={() => setIsPopupOpen(true)}
+          className="absolute inset-0 cursor-pointer pointer-events-auto opacity-20 hover:opacity-40 hover:bg-[#14d8ff]/5 active:bg-[#14d8ff]/10 transition-all duration-300 z-30 group"
+          title={isAr ? "اضغط لفتح البوابة الإلكترونية" : "Click to open digital portal"}
+        >
           <div className="absolute inset-0 hud-scanline"></div>
           <div className="scan-animation"></div>
+          
+          {/* Subtle Hover Tooltip / Pulse Indicator */}
+          <div className="absolute bottom-12 left-1/2 -translate-x-1/2 bg-[#09151c]/95 border border-[#14d8ff]/40 px-3 py-1.5 rounded-full flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none shadow-[0_0_12px_rgba(20,216,255,0.3)]">
+            <Globe size={11} className="text-[#14d8ff] animate-spin-slow" />
+            <span className="text-[10px] font-bold text-white tracking-wide">
+              {isAr ? "زيارة موقع العيادة" : "Visit Clinical Website"}
+            </span>
+          </div>
         </div>
 
         {/* Concentric glowing rings stage */}
@@ -349,6 +365,200 @@ export default function Home({onNavigate, locale, settings, doctor, services}: H
           </p>
         </div>
       </section>
+
+      {/* In-App Browser & Info Link Popup Modal */}
+      <AnimatePresence>
+        {isPopupOpen && (
+          <>
+            {/* Backdrop filter overlay */}
+            <motion.div
+              initial={{opacity: 0}}
+              animate={{opacity: 1}}
+              exit={{opacity: 0}}
+              onClick={() => setIsPopupOpen(false)}
+              className="fixed inset-0 bg-black/85 backdrop-blur-md z-50 cursor-pointer"
+            />
+            
+            {/* Modal Browser Container */}
+            <motion.div
+              initial={{opacity: 0, scale: 0.95, y: 30}}
+              animate={{opacity: 1, scale: 1, y: 0}}
+              exit={{opacity: 0, scale: 0.95, y: 30}}
+              transition={{type: "spring", damping: 25, stiffness: 210}}
+              className="fixed inset-x-4 top-[8%] bottom-[8%] md:inset-x-12 md:top-[12%] md:bottom-[12%] bg-[#080f12]/95 border border-[#14d8ff]/30 rounded-[28px] shadow-[0_0_50px_rgba(20,216,255,0.25)] z-50 flex flex-col overflow-hidden text-right"
+              dir={isAr ? "rtl" : "ltr"}
+            >
+              {/* Sleek Browser-style Top Navigation Bar */}
+              <div className="h-14 bg-[#0c161a] border-b border-white/5 px-4 flex items-center justify-between gap-3 shrink-0" dir="ltr">
+                {/* Simulated Window Control Dots (always left-aligned) */}
+                <div className="flex items-center gap-1.5 order-first">
+                  <div className="w-3.5 h-3.5 rounded-full bg-red-500/85 shadow-[0_0_6px_rgba(239,68,68,0.4)] cursor-pointer" onClick={() => setIsPopupOpen(false)}></div>
+                  <div className="w-3.5 h-3.5 rounded-full bg-yellow-500/85"></div>
+                  <div className="w-3.5 h-3.5 rounded-full bg-green-500/85"></div>
+                </div>
+
+                {/* Secure SSL Address Bar Mockup */}
+                <div className="flex-1 max-w-sm md:max-w-md mx-auto h-8 bg-[#04080a] border border-[#14d8ff]/15 rounded-lg flex items-center justify-between px-3 gap-2">
+                  <div className="flex items-center gap-1.5 opacity-80">
+                    <Shield size={11} className="text-green-400" />
+                    <span className="text-[10px] font-mono text-green-400/90 tracking-wider">HTTPS</span>
+                  </div>
+                  <span className="text-[11px] font-mono font-medium text-[#859398] select-all truncate">
+                    {settings?.website ? settings.website.replace(/^https?:\/\//, '') : 'rifai-dental.com'}
+                  </span>
+                  <div className="w-3.5 h-3.5 flex items-center justify-center opacity-40 hover:opacity-80 cursor-pointer transition-opacity">
+                    <RefreshCw size={10} className="text-white" />
+                  </div>
+                </div>
+
+                {/* Close Button & Actions */}
+                <div className="flex items-center gap-2">
+                  <a 
+                    href={settings?.website || 'https://rifai-dental.com'}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-[#859398] hover:text-[#14d8ff] transition-all"
+                    title={isAr ? "فتح في علامة تبويب جديدة" : "Open in New Tab"}
+                  >
+                    <ExternalLink size={13} />
+                  </a>
+                  <button
+                    onClick={() => setIsPopupOpen(false)}
+                    className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-[#859398] hover:text-white transition-all cursor-pointer"
+                  >
+                    <X size={15} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Dynamic Content Split Pane */}
+              <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
+                {/* Left side / Main Pane: Iframe with direct-load check */}
+                <div className="flex-1 h-full bg-[#030608] relative flex flex-col items-center justify-center p-6 text-center">
+                  
+                  {/* Embedded Iframe */}
+                  <iframe 
+                    src={settings?.website || 'https://rifai-dental.com'} 
+                    className="absolute inset-0 w-full h-full border-none z-10 opacity-90 hover:opacity-100 transition-opacity bg-transparent"
+                    title="Clinical Website"
+                  />
+                  
+                  {/* High Fidelity Beautiful Fallback Frame behind the iframe (visible if iframe is blocked or slow) */}
+                  <div className="relative z-0 max-w-md space-y-6 px-4">
+                    <div className="w-16 h-16 rounded-full bg-[#14d8ff]/10 border border-[#14d8ff]/30 flex items-center justify-center text-[#14d8ff] mx-auto shadow-[0_0_24px_rgba(20,216,255,0.25)] animate-pulse">
+                      <Globe size={28} />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <h3 className="text-lg font-black text-white">
+                        {isAr ? "موقع عيادتنا المتكامل" : "Our Official Website"}
+                      </h3>
+                      <p className="text-xs text-[#859398] leading-relaxed">
+                        {isAr 
+                          ? "لحمايتك وخصوصيتك، تمنع بعض المواقع التصفح المباشر داخل التطبيقات المصغرة. اضغط على الزر أدناه لفتح موقعنا الفاخر في نافذة تصفح خارجية آمنة."
+                          : "For security and privacy, some websites restrict inside-app viewing. Click below to launch our premium web portal in a secure, full browser window."}
+                      </p>
+                    </div>
+
+                    <div className="flex flex-col gap-2.5 max-w-xs mx-auto">
+                      <a 
+                        href={settings?.website || 'https://rifai-dental.com'}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full bg-gradient-to-r from-[#03d4ed] to-[#14d8ff] py-3.5 px-6 rounded-xl font-bold text-xs uppercase tracking-widest text-[#001f27] hover:shadow-[0_0_20px_rgba(20,216,255,0.4)] active:scale-95 transition-all text-center flex items-center justify-center gap-2"
+                      >
+                        <Globe size={14} />
+                        <span>{isAr ? "فتح الموقع الرسمي" : "Open Live Website"}</span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right side / Sidebar Pane: Smart Navigation and clinic actions */}
+                <div className="w-full md:w-80 bg-[#0c161a]/95 border-t md:border-t-0 md:border-r border-white/5 p-5 flex flex-col justify-between shrink-0 space-y-5">
+                  <div className="space-y-4">
+                    <div className="pb-3 border-b border-white/5">
+                      <span className="text-[9px] font-bold text-accent uppercase tracking-wider block mb-1">
+                        {isAr ? "بوابة الخدمات الرقمية" : "Digital Service Center"}
+                      </span>
+                      <h4 className="text-sm font-black text-white">
+                        {isAr ? "د. مصطفى الرفاعي" : "Dr. Mustafa Al-Rifai"}
+                      </h4>
+                      <p className="text-[11px] text-[#859398] mt-0.5">
+                        {isAr ? "تكنولوجيا المستقبل لرعاية ابتسامتك" : "Future dentistry for your smile"}
+                      </p>
+                    </div>
+
+                    {/* Fast links */}
+                    <div className="space-y-2.5">
+                      {/* WhatsApp */}
+                      <a 
+                        href={`https://wa.me/${(settings?.whatsapp || '971509876543').replace(/\+/g, '').replace(/\s/g, '')}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 hover:border-green-500/30 hover:bg-green-500/5 transition-all"
+                      >
+                        <MessageSquare size={15} className="text-green-400 shrink-0" />
+                        <div className="text-start">
+                          <p className="text-[9px] text-[#859398] leading-none mb-0.5">{isAr ? "واتساب سريع" : "Fast WhatsApp"}</p>
+                          <p className="text-xs font-bold text-[#dde4e6]">{isAr ? "استشارة فورية" : "Instant Consult"}</p>
+                        </div>
+                      </a>
+
+                      {/* Phone */}
+                      <a 
+                        href={`tel:${settings?.phone || '+97145551234'}`}
+                        className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 hover:border-accent/30 hover:bg-accent/5 transition-all"
+                      >
+                        <Phone size={15} className="text-accent shrink-0" />
+                        <div className="text-start">
+                          <p className="text-[9px] text-[#859398] leading-none mb-0.5">{isAr ? "اتصال فوري" : "Call Clinic"}</p>
+                          <p className="text-xs font-bold text-[#dde4e6]">{settings?.phone || '+971 4 555 1234'}</p>
+                        </div>
+                      </a>
+
+                      {/* Map */}
+                      <a 
+                        href={settings?.google_map || 'https://maps.google.com'}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 hover:border-accent/30 hover:bg-accent/5 transition-all"
+                      >
+                        <MapPin size={15} className="text-accent shrink-0" />
+                        <div className="text-start">
+                          <p className="text-[9px] text-[#859398] leading-none mb-0.5">{isAr ? "الموقع الجغرافي" : "Maps Location"}</p>
+                          <p className="text-xs font-bold text-[#dde4e6] truncate max-w-[180px]">{isAr ? "جميرا، دبي" : "Jumeirah, Dubai"}</p>
+                        </div>
+                      </a>
+
+                      {/* Booking Instant navigation */}
+                      <button 
+                        onClick={() => {
+                          setIsPopupOpen(false);
+                          onNavigate('booking');
+                        }}
+                        className="w-full flex items-center gap-3 p-3 rounded-xl bg-accent/10 border border-accent/20 hover:border-accent/40 hover:bg-accent/15 transition-all cursor-pointer text-start"
+                      >
+                        <Calendar size={15} className="text-accent shrink-0" />
+                        <div className="text-start">
+                          <p className="text-[9px] text-[#859398] leading-none mb-0.5">{isAr ? "احجز موعداً" : "Appointment"}</p>
+                          <p className="text-xs font-bold text-accent">{isAr ? "تأكيد فوري" : "Instant Booking"}</p>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Trust Footer */}
+                  <div className="pt-3 border-t border-white/5 flex items-center justify-center gap-1.5 opacity-60" dir="ltr">
+                    <Shield size={12} className="text-accent" />
+                    <span className="text-[8px] font-mono text-[#859398] tracking-widest">SECURED GATEWAY</span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
