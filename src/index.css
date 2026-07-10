@@ -1,0 +1,89 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #0e1417;
+  --color-surface: #1a2123;
+  --color-primary: #aeecff;
+  --color-secondary: #83ecff;
+  --color-accent: #14d8ff;
+  --color-outline: #3c494d;
+  
+  --font-sans: "Inter", "IBM Plex Sans Arabic", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-background text-[#dde4e6] antialiased selection:bg-accent/30;
+    font-family: var(--font-sans);
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-[#151d2a]/60 backdrop-blur-2xl border border-white/10 shadow-inner;
+    background: linear-gradient(135deg, rgba(21, 29, 42, 0.6) 0%, rgba(10, 16, 23, 0.8) 100%);
+  }
+  
+  .neon-glow {
+    @apply drop-shadow-[0_0_8px_rgba(20,216,255,0.5)];
+  }
+
+  .hud-border {
+    @apply border-l-2 border-accent pl-3;
+  }
+  
+  .primary-gradient {
+    background: linear-gradient(135deg, #14d8ff 0%, #00687b 100%);
+  }
+
+  .hud-scanline {
+    background: linear-gradient(to bottom, transparent 50%, rgba(20, 216, 255, 0.05) 50%);
+    background-size: 100% 4px;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* Custom Animations */
+@keyframes hologram-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-hologram-rotate {
+  animation: hologram-rotate 20s linear infinite;
+}
+
+.floating {
+  animation: floating 4s ease-in-out infinite;
+}
+
+@keyframes floating {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33% { transform: translateY(-12px) rotate(1deg); }
+  66% { transform: translateY(-5px) rotate(-1deg); }
+}
+
+@keyframes scan {
+  0% { top: -100%; opacity: 0; }
+  50% { opacity: 0.5; }
+  100% { top: 100%; opacity: 0; }
+}
+
+.scan-animation {
+  position: absolute;
+  top: -100%;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, transparent, rgba(20, 216, 255, 0.1), transparent);
+  animation: scan 3s linear infinite;
+}
+

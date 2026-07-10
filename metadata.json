@@ -1,0 +1,8 @@
+{
+  "name": "Dental AI",
+  "description": "An ultra-modern, AI-powered dental clinic application for Dr. Mustafa Al-Rifai, featuring digital implants and luxury aesthetic care.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
