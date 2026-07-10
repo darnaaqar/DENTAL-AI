@@ -40,12 +40,14 @@ jobs:
         working-directory: flutter_project
         run: flutter pub get
 
-      - name: Build APK (Debug/Unsigned Release for instant testing)
+      - name: Build Optimized Release APKs
         working-directory: flutter_project
-        run: flutter build apk --debug
+        run: |
+          flutter build apk --release
+          flutter build apk --release --split-per-abi
 
-      - name: Upload APK Artifact
+      - name: Upload APK Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug-apk
-          path: flutter_project/build/app/outputs/flutter-apk/app-debug.apk
+          name: dental-clinic-release-apks
+          path: flutter_project/build/app/outputs/flutter-apk/*.apk

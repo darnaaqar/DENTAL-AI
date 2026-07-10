@@ -55,9 +55,14 @@ To compile your APK automatically using GitHub's secure cloud servers:
    ```
 3. Once pushed, navigate to the **Actions** tab on your GitHub repository page.
 4. You will see the **"Build & Release Android APK"** workflow running automatically!
-5. When the build completes successfully, click on the workflow run, scroll down to the **Artifacts** section, and download your ready-to-install **`app-release.apk`**!
+5. When the build completes successfully, click on the workflow run, scroll down to the **Artifacts** section, and download your **`dental-clinic-release-apks`**!
+
+   Within the downloaded ZIP, you will find:
+   - **`app-release.apk`**: A single "universal" release APK (typically ~12-15MB) containing native code for all CPU architectures.
+   - **`app-arm64-v8a-release.apk`**: A highly optimized APK (typically **only ~5-8MB**) targeted specifically for modern 64-bit Android devices.
+   - **`app-armeabi-v7a-release.apk`**: A highly optimized APK (typically **only ~5-7MB**) for older 32-bit Android devices.
 
 ---
 
 ## 🔒 Optional: Signed production APKs
-To publish to the Google Play Store, you can sign the APK by adding your Keystore files to GitHub Secrets. Our pre-configured GitHub action builds an unsigned debug-alignment APK which is immediately installable on any Android phone for testing.
+To publish to the Google Play Store, you can sign the APK by adding your Keystore files to GitHub Secrets. Our pre-configured GitHub action builds optimized unsigned release APKs which are immediately installable on most Android phones for testing (make sure "Install from Unknown Sources" is enabled in settings).
