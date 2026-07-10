@@ -1051,7 +1051,7 @@ class _BookingScreenState extends State<BookingScreen> {
                   const SizedBox(height: 12),
                   Text(
                     isAr ? 'لديك حجز موعد نشط!' : 'You Have an Active Booking!',
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.black, color: Colors.white),
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: Colors.white),
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -1159,7 +1159,7 @@ class _BookingScreenState extends State<BookingScreen> {
               children: [
                 Text(
                   isAr ? 'اختر الموعد الجديد' : 'Reschedule Date & Time',
-                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.black, color: Colors.white),
+                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: Colors.white),
                 ),
                 IconButton(
                   onPressed: () => setState(() => _isEditingActive = false),
