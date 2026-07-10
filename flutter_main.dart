@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -866,10 +867,130 @@ class _BookingScreenState extends State<BookingScreen> {
   bool _booked = false;
   String? _error;
 
+  String? _activeBookingId;
+  Map<String, dynamic>? _activeBookingDetails;
+  bool _isEditingActive = false;
+
   bool get isAr => widget.locale == 'ar';
 
   @override
+  void initState() {
+    super.initState();
+    _loadActiveBooking();
+  }
+
+  Future<void> _loadActiveBooking() async {
+    setState(() => _isLoading = true);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final id = prefs.getString('rifai_active_booking_id');
+      if (id != null) {
+        final res = await supabase.from('appointments').select().eq('id', id).maybeSingle();
+        if (res != null) {
+          setState(() {
+            _activeBookingId = id;
+            _activeBookingDetails = Map<String, dynamic>.from(res);
+            _name = res['patient_name'] ?? '';
+            _phone = res['phone'] ?? '';
+            _selectedServiceId = res['service_id']?.toString();
+            final dateStr = res['appointment_date'] as String?;
+            if (dateStr != null) {
+              _selectedDate = DateTime.tryParse(dateStr);
+            }
+            _selectedTime = res['appointment_time'] as String?;
+            _notes = res['notes'] ?? '';
+          });
+        } else {
+          await prefs.remove('rifai_active_booking_id');
+        }
+      }
+    } catch (e) {
+      debugPrint('Error loading active booking: $e');
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _saveActiveBookingId(String id) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('rifai_active_booking_id', id);
+    } catch (e) {
+      debugPrint('Error saving active booking ID: $e');
+    }
+  }
+
+  Future<void> _removeActiveBookingId() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('rifai_active_booking_id');
+    } catch (e) {
+      debugPrint('Error removing active booking ID: $e');
+    }
+  }
+
+  Future<void> _cancelBooking() async {
+    if (_activeBookingId == null) return;
+    setState(() => _isLoading = true);
+    try {
+      await supabase.from('appointments').delete().eq('id', _activeBookingId!);
+      await _removeActiveBookingId();
+      setState(() {
+        _activeBookingId = null;
+        _activeBookingDetails = null;
+        _booked = false;
+        _isEditingActive = false;
+        _selectedDate = null;
+        _selectedTime = null;
+        _name = '';
+        _phone = '';
+        _notes = '';
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(isAr ? 'تم إلغاء الحجز بنجاح' : 'Appointment cancelled successfully')),
+      );
+    } catch (e) {
+      setState(() => _error = e.toString());
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _updateBooking() async {
+    if (_activeBookingId == null || _selectedDate == null || _selectedTime == null) return;
+    setState(() => _isLoading = true);
+    try {
+      final dateStr = '${_selectedDate!.year}-${_selectedDate!.month.toString().padLeft(2, '0')}-${_selectedDate!.day.toString().padLeft(2, '0')}';
+      final res = await supabase.from('appointments').update({
+        'appointment_date': dateStr,
+        'appointment_time': _selectedTime,
+      }).eq('id', _activeBookingId!).select().single();
+
+      setState(() {
+        _activeBookingDetails = Map<String, dynamic>.from(res);
+        _isEditingActive = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(isAr ? 'تم تعديل موعد الحجز بنجاح!' : 'Successfully rescheduled appointment!')),
+      );
+    } catch (e) {
+      setState(() => _error = e.toString());
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const SizedBox(
+        height: 400,
+        child: Center(child: CircularProgressIndicator(color: Color(0xFF14D8FF))),
+      );
+    }
+
+    // SUCCESS SCREEN (After fresh booking)
     if (_booked) {
       return Padding(
         padding: const EdgeInsets.all(24.0),
@@ -878,20 +999,261 @@ class _BookingScreenState extends State<BookingScreen> {
           children: [
             const Icon(Icons.check_circle_outline, color: Color(0xFF14D8FF), size: 64),
             const SizedBox(height: 16),
-            Text(isAr ? 'تم إرسال طلبك بنجاح!' : 'Submitted Successfully!', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+            Text(isAr ? 'تم حجز موعدك بنجاح!' : 'Booking Confirmed!', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
             const SizedBox(height: 8),
-            Text(isAr ? 'سيتواصل معك المنسق لتأكيد الموعد.' : 'Our coordinator will call shortly to confirm.', style: const TextStyle(color: Colors.white54, fontSize: 12), textAlign: TextAlign.center),
+            Text(
+              isAr 
+                ? 'سيتواصل معك المنسق لتأكيد الموعد قريباً.' 
+                : 'Our coordinator will contact you shortly to confirm.', 
+              style: const TextStyle(color: Colors.white54, fontSize: 12), 
+              textAlign: TextAlign.center
+            ),
             const SizedBox(height: 24),
             ElevatedButton(
-              onPressed: () => setState(() => _booked = false),
+              onPressed: () {
+                _loadActiveBooking();
+                setState(() => _booked = false);
+              },
               style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF14D8FF)),
-              child: Text(isAr ? 'حجز موعد آخر' : 'Book Another', style: const TextStyle(color: Colors.black)),
+              child: Text(isAr ? 'عرض حجز الموعد الحالي' : 'View Active Booking', style: const TextStyle(color: Colors.black)),
             )
           ],
         ),
       );
     }
 
+    // ACTIVE BOOKING (Anti-spam panel)
+    if (_activeBookingId != null && _activeBookingDetails != null && !_isEditingActive) {
+      final patientName = _activeBookingDetails!['patient_name'] ?? '';
+      final dateStr = _activeBookingDetails!['appointment_date'] ?? '';
+      final timeStr = _activeBookingDetails!['appointment_time'] ?? '';
+      final serviceId = _activeBookingDetails!['service_id']?.toString();
+      final serviceMap = widget.services.firstWhere((s) => s['id']?.toString() == serviceId, orElse: () => <String, dynamic>{});
+      final serviceName = isAr ? (serviceMap['name_ar'] ?? '') : (serviceMap['name_en'] ?? '');
+
+      return SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFF161D1F),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: const Color(0xFF14D8FF).withOpacity(0.2)),
+              ),
+              child: Column(
+                children: [
+                  const Icon(Icons.verified_user_outlined, color: Color(0xFF14D8FF), size: 48),
+                  const SizedBox(height: 12),
+                  Text(
+                    isAr ? 'لديك حجز موعد نشط!' : 'You Have an Active Booking!',
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.black, color: Colors.white),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    isAr 
+                      ? 'يُسمح بحجز موعد واحد نشط لكل جهاز لمنع تكرار الحجوزات. يمكنك تعديل الموعد أو إلغاؤه أدناه.' 
+                      : 'Only one active appointment is allowed per device. You can reschedule or cancel it below.',
+                    style: const TextStyle(color: Colors.white54, fontSize: 11),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+            Align(
+              alignment: isAr ? Alignment.centerRight : Alignment.centerLeft,
+              child: Text(
+                isAr ? 'تفاصيل الموعد الحالي' : 'Current Booking Summary',
+                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFF161D1F),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.white10),
+              ),
+              child: Column(
+                children: [
+                  _buildSummaryRow(isAr ? 'اسم المريض:' : 'Patient Name:', patientName),
+                  if (serviceName.isNotEmpty) ...[
+                    const Divider(color: Colors.white10, height: 24),
+                    _buildSummaryRow(isAr ? 'الخدمة المطلوبة:' : 'Treatment Service:', serviceName),
+                  ],
+                  const Divider(color: Colors.white10, height: 24),
+                  _buildSummaryRow(isAr ? 'التاريخ والوقت:' : 'Date & Time:', '$dateStr @ $timeStr', valueColor: const Color(0xFF14D8FF)),
+                  const Divider(color: Colors.white10, height: 24),
+                  _buildSummaryRow(isAr ? 'حالة الطلب:' : 'Request Status:', isAr ? 'بانتظار التأكيد' : 'Pending Confirmation', valueColor: Colors.greenAccent),
+                ],
+              ),
+            ),
+            const SizedBox(height: 32),
+            GestureDetector(
+              onTap: () => setState(() => _isEditingActive = true),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  gradient: const LinearGradient(colors: [Color(0xFF03D4ED), Color(0xFF14D8FF)]),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.edit_calendar, color: Color(0xFF001F27), size: 18),
+                    const SizedBox(width: 8),
+                    Text(
+                      isAr ? 'تعديل تاريخ أو وقت الموعد' : 'Reschedule Appointment',
+                      style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF001F27), fontSize: 13),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            GestureDetector(
+              onTap: _cancelBooking,
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  color: Colors.red.withOpacity(0.1),
+                  border: Border.all(color: Colors.redAccent.withOpacity(0.3)),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.delete_outline, color: Colors.redAccent, size: 18),
+                    const SizedBox(width: 8),
+                    Text(
+                      isAr ? 'إلغاء حجز الموعد' : 'Cancel Appointment',
+                      style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.redAccent, fontSize: 13),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // EDITING / RESCHEDULING DATE AND TIME ONLY
+    if (_isEditingActive) {
+      return SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  isAr ? 'اختر الموعد الجديد' : 'Reschedule Date & Time',
+                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.black, color: Colors.white),
+                ),
+                IconButton(
+                  onPressed: () => setState(() => _isEditingActive = false),
+                  icon: const Icon(Icons.close, color: Colors.white54),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            if (_error != null) ...[
+              Text(_error!, style: const TextStyle(color: Colors.redAccent, fontSize: 11)),
+              const SizedBox(height: 12),
+            ],
+            GestureDetector(
+              onTap: () async {
+                final date = await showDatePicker(
+                  context: context,
+                  initialDate: _selectedDate ?? DateTime.now().add(const Duration(days: 1)),
+                  firstDate: DateTime.now(),
+                  lastDate: DateTime.now().add(const Duration(days: 90)),
+                );
+                if (date != null) setState(() => _selectedDate = date);
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                decoration: BoxDecoration(border: Border.all(color: Colors.white24), borderRadius: BorderRadius.circular(12)),
+                child: Row(
+                  children: [
+                    const Icon(Icons.calendar_month_outlined, color: Color(0xFF14D8FF)),
+                    const SizedBox(width: 12),
+                    Text(_selectedDate == null ? (isAr ? 'اختر تاريخ الموعد الجديد' : 'Choose New Date') : '${_selectedDate!.year}-${_selectedDate!.month}-${_selectedDate!.day}'),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(isAr ? 'الوقت المفضل الجديد' : 'New Preferred Slot', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: ['09:30 AM', '11:00 AM', '02:30 PM', '04:30 PM'].map((t) {
+                final sel = _selectedTime == t;
+                return GestureDetector(
+                  onTap: () => setState(() => _selectedTime = t),
+                  child: Chip(
+                    backgroundColor: sel ? const Color(0xFF14D8FF).withOpacity(0.2) : Colors.white10,
+                    side: BorderSide(color: sel ? const Color(0xFF14D8FF) : Colors.transparent),
+                    label: Text(t, style: TextStyle(color: sel ? const Color(0xFF14D8FF) : Colors.white, fontSize: 12)),
+                  ),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 40),
+            GestureDetector(
+              onTap: _updateBooking,
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  gradient: const LinearGradient(colors: [Color(0xFF03D4ED), Color(0xFF14D8FF)]),
+                ),
+                child: Center(
+                  child: Text(
+                    isAr ? 'حفظ وتأكيد التغييرات' : 'Save & Confirm Changes',
+                    style: const TextStyle(fontWeight: FontWeight.w900, color: Color(0xFF001F27)),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            GestureDetector(
+              onTap: () => setState(() => _isEditingActive = false),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  color: Colors.white10,
+                ),
+                child: Center(
+                  child: Text(
+                    isAr ? 'إلغاء التعديل' : 'Cancel Rescheduling',
+                    style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white70),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // STANDARD FIRST TIME BOOKING FORM
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.all(20.0),
@@ -907,12 +1269,14 @@ class _BookingScreenState extends State<BookingScreen> {
               const SizedBox(height: 12),
             ],
             TextFormField(
+              initialValue: _name,
               decoration: InputDecoration(labelText: isAr ? 'الاسم بالكامل' : 'Full Name', prefixIcon: const Icon(Icons.person_outline, color: Color(0xFF14D8FF))),
               validator: (val) => val == null || val.isEmpty ? (isAr ? 'الرجاء إدخال الاسم' : 'Required') : null,
               onSaved: (val) => _name = val ?? '',
             ),
             const SizedBox(height: 16),
             TextFormField(
+              initialValue: _phone,
               keyboardType: TextInputType.phone,
               decoration: InputDecoration(labelText: isAr ? 'رقم الهاتف' : 'Phone Number', prefixIcon: const Icon(Icons.phone_outlined, color: Color(0xFF14D8FF))),
               validator: (val) => val == null || val.isEmpty ? (isAr ? 'الرجاء إدخال الهاتف' : 'Required') : null,
@@ -957,7 +1321,7 @@ class _BookingScreenState extends State<BookingScreen> {
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
-                children: ['09:00 AM', '11:00 AM', '02:00 PM', '04:30 PM', '06:00 PM'].map((t) {
+                children: ['09:30 AM', '11:00 AM', '02:30 PM', '04:30 PM'].map((t) {
                   final sel = _selectedTime == t;
                   return GestureDetector(
                     onTap: () => setState(() => _selectedTime = t),
@@ -971,6 +1335,7 @@ class _BookingScreenState extends State<BookingScreen> {
               const SizedBox(height: 16),
             ],
             TextFormField(
+              initialValue: _notes,
               maxLines: 2,
               decoration: InputDecoration(labelText: isAr ? 'ملاحظات أو أعراض' : 'Notes / Symptoms', prefixIcon: const Icon(Icons.chat_bubble_outline, color: Color(0xFF14D8FF))),
               onSaved: (val) => _notes = val ?? '',
@@ -989,7 +1354,7 @@ class _BookingScreenState extends State<BookingScreen> {
                         setState(() { _isLoading = true; _error = null; });
                         try {
                           final dateStr = '${_selectedDate!.year}-${_selectedDate!.month.toString().padLeft(2, '0')}-${_selectedDate!.day.toString().padLeft(2, '0')}';
-                          await supabase.from('appointments').insert({
+                          final res = await supabase.from('appointments').insert({
                             'patient_name': _name,
                             'phone': _phone,
                             'service_id': _selectedServiceId,
@@ -998,8 +1363,18 @@ class _BookingScreenState extends State<BookingScreen> {
                             'appointment_time': _selectedTime,
                             'notes': _notes,
                             'status': 'pending'
+                          }).select().single();
+                          
+                          final newId = res['id']?.toString();
+                          if (newId != null) {
+                            await _saveActiveBookingId(newId);
+                          }
+                          setState(() { 
+                            _isLoading = false; 
+                            _booked = true; 
+                            _activeBookingId = newId;
+                            _activeBookingDetails = Map<String, dynamic>.from(res);
                           });
-                          setState(() { _isLoading = false; _booked = true; });
                         } catch (e) {
                           setState(() { _isLoading = false; _error = e.toString(); });
                         }
@@ -1015,6 +1390,16 @@ class _BookingScreenState extends State<BookingScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildSummaryRow(String label, String value, {Color valueColor = Colors.white70}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(label, style: const TextStyle(color: Colors.white38, fontSize: 12)),
+        Text(value, style: TextStyle(color: valueColor, fontWeight: FontWeight.bold, fontSize: 12)),
+      ],
     );
   }
 }
@@ -1045,42 +1430,48 @@ class AboutScreen extends StatelessWidget {
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.all(24),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Row(
-            children: [
-              Container(
-                width: 64,
-                height: 64,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: const Color(0xFF14D8FF)),
-                  image: image.toString().isNotEmpty ? DecorationImage(image: NetworkImage(image), fit: BoxFit.cover) : null,
-                ),
-                child: image.toString().isEmpty ? const Icon(Icons.person, color: Color(0xFF14D8FF)) : null,
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: Colors.white)),
-                    const SizedBox(height: 4),
-                    Text(title, style: const TextStyle(fontSize: 11, color: Color(0xFF14D8FF), fontWeight: FontWeight.bold)),
-                  ],
-                ),
-              )
-            ],
+          const SizedBox(height: 12),
+          Container(
+            width: 110,
+            height: 110,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: const Color(0xFF14D8FF), width: 3),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF14D8FF).withOpacity(0.3),
+                  blurRadius: 15,
+                  spreadRadius: 2,
+                )
+              ],
+              image: image.toString().isNotEmpty ? DecorationImage(image: NetworkImage(image), fit: BoxFit.cover) : null,
+            ),
+            child: image.toString().isEmpty ? const Icon(Icons.person, color: Color(0xFF14D8FF), size: 48) : null,
           ),
+          const SizedBox(height: 16),
+          Text(name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.white), textAlign: TextAlign.center),
+          const SizedBox(height: 6),
+          Text(title, style: const TextStyle(fontSize: 12, color: Color(0xFF14D8FF), fontWeight: FontWeight.bold), textAlign: TextAlign.center),
           const SizedBox(height: 16),
           const Divider(color: Colors.white10),
           const SizedBox(height: 16),
-          Text(isAr ? 'السيرة المهنية' : 'Professional Biography', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.white)),
+          Align(
+            alignment: isAr ? Alignment.centerRight : Alignment.centerLeft,
+            child: Text(isAr ? 'السيرة المهنية' : 'Professional Biography', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.white)),
+          ),
           const SizedBox(height: 8),
-          Text(bio, style: const TextStyle(fontSize: 11, color: Color(0xFF859398), height: 1.6)),
+          Align(
+            alignment: isAr ? Alignment.centerRight : Alignment.centerLeft,
+            child: Text(bio, style: const TextStyle(fontSize: 11, color: Color(0xFF859398), height: 1.6)),
+          ),
           if (quals.isNotEmpty) ...[
             const SizedBox(height: 20),
-            Text(isAr ? 'الشهادات والاعتمادات' : 'Credentials', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.white)),
+            Align(
+              alignment: isAr ? Alignment.centerRight : Alignment.centerLeft,
+              child: Text(isAr ? 'الشهادات والاعتمادات' : 'Credentials', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.white)),
+            ),
             const SizedBox(height: 8),
             ...quals.map((q) => Padding(
                   padding: const EdgeInsets.only(bottom: 6),

@@ -25,7 +25,7 @@ const fallbackDoctor = {
   qualifications_ar: 'ماجستير في طب الأسنان التجميلي|عضو الجمعية الأمريكية لطب الأسنان|دورات متقدمة في زراعة وتجميل الأسنان',
   qualifications_en: 'Master in Cosmetic Dentistry (International Academy of Cosmetic Dentistry)|Member of ADA (American Dental Association)|Advanced Dental Implant Specialist (Advanced Courses in Implants & Aesthetics)',
   experience_years: 15,
-  image_url: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBQGk9T8T-E-dTpTss5FQxeaLgfuT6D7b8knwLxoma7ZhneQUbTV6jegwf83Rz3Wsi-1ojfZUr4lObSfdbX8qJs_GRO-1BDl9AUgNUb0Z60o8xRS9X-FtvMzMNib-qoykcBsefefS1Hhaf0u5mEuLb83liLjH7sos8ZJOA7njPRorV-taMls7PyH_FyRFsPwcu0h8c2UUGlTi9rSDRoelBrHe30tc3qJpL7eQi6euwC_Dofi6FIaIkTEyIqa6zWRKrNA2ZqGbxXlPo',
+  image_url: '/src/assets/images/doctor_mustafa_1783724318809.jpg',
   phone: '+971 4 555 1234',
   email: 'info@rifai-dental.com',
   whatsapp: '+971 50 987 6543',
@@ -269,3 +269,75 @@ export async function createAppointment(appointment: {
     return { data: null, error: err };
   }
 }
+
+/**
+ * Update an existing appointment (e.g. reschedule)
+ */
+export async function updateAppointment(id: string, appointment_date: string, appointment_time: string) {
+  if (!supabase) {
+    console.log('Supabase mock update:', { id, appointment_date, appointment_time });
+    return { data: { id, appointment_date, appointment_time }, error: null };
+  }
+  try {
+    const { data, error } = await supabase
+      .from('appointments')
+      .update({ appointment_date, appointment_time })
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('Supabase Appointment update error:', error);
+      return { data: null, error };
+    }
+    return { data, error: null };
+  } catch (err: any) {
+    console.error('Appointment update exception:', err);
+    return { data: null, error: err };
+  }
+}
+
+/**
+ * Cancel/Delete an existing appointment
+ */
+export async function cancelAppointment(id: string) {
+  if (!supabase) {
+    console.log('Supabase mock cancel:', id);
+    return { error: null };
+  }
+  try {
+    const { error } = await supabase
+      .from('appointments')
+      .delete()
+      .eq('id', id);
+    
+    if (error) {
+      console.error('Supabase Appointment cancel error:', error);
+      return { error };
+    }
+    return { error: null };
+  } catch (err: any) {
+    console.error('Appointment cancel exception:', err);
+    return { error: err };
+  }
+}
+
+/**
+ * Fetch a single appointment by ID
+ */
+export async function getAppointment(id: string) {
+  if (!supabase) return null;
+  try {
+    const { data, error } = await supabase
+      .from('appointments')
+      .select('*')
+      .eq('id', id)
+      .single();
+    
+    if (error) return null;
+    return data;
+  } catch {
+    return null;
+  }
+}
+

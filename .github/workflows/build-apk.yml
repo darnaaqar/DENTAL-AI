@@ -35,6 +35,8 @@ jobs:
         run: |
           cp pubspec.yaml flutter_project/pubspec.yaml
           cp flutter_main.dart flutter_project/lib/main.dart
+          mkdir -p flutter_project/src/assets/images
+          cp -r src/assets/images/* flutter_project/src/assets/images/ || true
 
       - name: Configure Android Internet Permissions
         run: |
@@ -58,6 +60,10 @@ jobs:
       - name: Get Dependencies
         working-directory: flutter_project
         run: flutter pub get
+
+      - name: Generate App Launcher Icons
+        working-directory: flutter_project
+        run: dart run flutter_launcher_icons
 
       - name: Build Optimized Release APKs
         working-directory: flutter_project

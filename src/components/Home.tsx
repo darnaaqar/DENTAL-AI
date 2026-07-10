@@ -146,7 +146,7 @@ export default function Home({onNavigate, locale, settings, doctor, services}: H
           />
         </motion.div>
 
-        {/* Central 3D Wireframe Glowing Tooth */}
+        {/* Central Round Doctor Portrait */}
         <motion.div 
           animate={{
             y: [2, -6, 2],
@@ -160,9 +160,10 @@ export default function Home({onNavigate, locale, settings, doctor, services}: H
           className="relative z-10 -mt-10"
         >
           <img 
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8IhJhiFXgCJoUCUhdnc489Z5-t5f73w8_vrm1xpYXedmkJ03q-koJmRfbOUzS_KQB0wsM6NaXDIHtJwV0K5zDDPGeUiBqxJ1vahCOg4L_EOFtulSHKST682LV0CZ5esHQYRSk_GGGGfRSBitnzecYBWkSCsJoqy8_nsg06W7xEsAhpHHHrHBwqXslITJ85aSDIxTyNuG8ThD74NSybCASpY9V3MVWaet_3GWL3yhamaVQj4dbDGJVwpsxnrt-nByMJbCOw2YSxps"
-            className="w-44 h-44 rounded-full border-4 border-[#14d8ff] shadow-[0_0_25px_rgba(20,216,255,0.7),inset_0_0_20px_rgba(20,216,255,0.5)] p-6 bg-gradient-to-b from-[#001724]/90 to-[#000a12]/95 object-contain filter drop-shadow-[0_0_15px_rgba(20,216,255,0.6)]"
-            alt="Holographic Tooth"
+            src={doctor?.image_url || '/src/assets/images/doctor_mustafa_1783724318809.jpg'}
+            className="w-44 h-44 rounded-full border-4 border-[#14d8ff] shadow-[0_0_25px_rgba(20,216,255,0.7)] object-cover filter drop-shadow-[0_0_15px_rgba(20,216,255,0.6)]"
+            alt={isAr ? "د. مصطفى الرفاعي" : "Dr. Mustafa Al-Rifai"}
+            referrerPolicy="no-referrer"
           />
         </motion.div>
 

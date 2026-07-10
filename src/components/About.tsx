@@ -52,9 +52,10 @@ export default function About({locale, doctor}: AboutProps) {
           <div className="absolute -inset-1 bg-accent/20 rounded-full blur-xl animate-pulse"></div>
           <div className="relative w-40 h-40 rounded-full border-2 border-accent/50 p-1.5 overflow-hidden shadow-[0_0_30px_rgba(20,216,255,0.3)]">
             <img 
-              src={doctor?.image_url || "https://lh3.googleusercontent.com/aida-public/AB6AXuBQGk9T8T-E-dTpTss5FQxeaLgfuT6D7b8knwLxoma7ZhneQUbTV6jegwf83Rz3Wsi-1ojfZUr4lObSfdbX8qJs_GRO-1BDl9AUgNUb0Z60o8xRS9X-FtvMzMNib-qoykcBsefefS1Hhaf0u5mEuLb83liLjH7sos8ZJOA7njPRorV-taMls7PyH_FyRFsPwcu0h8c2UUGlTi9rSDRoelBrHe30tc3qJpL7eQi6euwC_Dofi6FIaIkTEyIqa6zWRKrNA2ZqGbxXlPo"} 
+              src={doctor?.image_url || "/src/assets/images/doctor_mustafa_1783724318809.jpg"} 
               className="w-full h-full rounded-full object-cover"
               alt="Dr. Mustafa"
+              referrerPolicy="no-referrer"
             />
           </div>
         </div>
