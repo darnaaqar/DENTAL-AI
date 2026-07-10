@@ -36,6 +36,25 @@ jobs:
           cp pubspec.yaml flutter_project/pubspec.yaml
           cp flutter_main.dart flutter_project/lib/main.dart
 
+      - name: Configure Android Internet Permissions
+        run: |
+          python3 -c "
+          import os
+          path = 'flutter_project/android/app/src/main/AndroidManifest.xml'
+          if os.path.exists(path):
+              with open(path, 'r') as f:
+                  text = f.read()
+              if 'android.permission.INTERNET' not in text:
+                  text = text.replace('<application', '    <uses-permission android:name=\"android.permission.INTERNET\" />\n    <application')
+                  with open(path, 'w') as f:
+                      f.write(text)
+                  print('Internet permission successfully injected into AndroidManifest.xml')
+              else:
+                  print('Internet permission already present')
+          else:
+              print('ERROR: AndroidManifest.xml not found at', path)
+          "
+
       - name: Get Dependencies
         working-directory: flutter_project
         run: flutter pub get

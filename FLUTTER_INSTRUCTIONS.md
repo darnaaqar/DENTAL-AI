@@ -31,8 +31,13 @@ If you want to run this application on your local machine or an emulator:
      url_launcher: ^6.3.0 # For the phone, WhatsApp, and Google Maps click events
    ```
 4. Run `flutter pub get` in your terminal to fetch the dependencies.
-5. Replace the contents of your `lib/main.dart` file with the complete code from the `main.dart` file generated in this workspace.
-6. Run the app:
+5. Replace the contents of your `lib/main.dart` file with the complete code from the `flutter_main.dart` file in this workspace.
+6. **Crucial: Add Internet Permission** (Needed for Supabase connection):
+   Open the file `android/app/src/main/AndroidManifest.xml` and insert this tag inside the `<manifest>` tag, just before the `<application ...>` tag:
+   ```xml
+   <uses-permission android:name="android.permission.INTERNET" />
+   ```
+7. Run the app:
    ```bash
    flutter run
    ```
