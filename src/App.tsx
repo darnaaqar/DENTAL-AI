@@ -200,7 +200,7 @@ export default function App() {
               onClick={() => setLocale('ar')}
               className={`flex-1 h-full rounded-full transition-all duration-300 cursor-pointer flex items-center justify-center text-[11px] ${
                 locale === 'ar'
-                  ? 'bg-gradient-to-r from-[#03d4ed] to-[#14d8ff] text-[#001f27] font-black shadow-[0_0_12px_rgba(20,216,255,0.4)]'
+                  ? 'bg-gradient-to-r from-[#03d4ed] to-[#14d8ff] text-white font-extrabold shadow-[0_0_12px_rgba(20,216,255,0.4)]'
                   : 'text-[#dde4e6] hover:text-white opacity-80'
               }`}
             >
@@ -210,8 +210,8 @@ export default function App() {
               onClick={() => setLocale('en')}
               className={`flex-1 h-full rounded-full transition-all duration-300 cursor-pointer flex items-center justify-center text-[11px] ${
                 locale === 'en'
-                  ? 'bg-gradient-to-r from-[#03d4ed] to-[#14d8ff] text-[#001f27] font-black shadow-[0_0_12px_rgba(20,216,255,0.4)]'
-                  : 'text-[#859398] hover:text-white opacity-80'
+                  ? 'bg-gradient-to-r from-[#03d4ed] to-[#14d8ff] text-white font-extrabold shadow-[0_0_12px_rgba(20,216,255,0.4)]'
+                  : 'text-[#dde4e6] hover:text-white opacity-80'
               }`}
             >
               English

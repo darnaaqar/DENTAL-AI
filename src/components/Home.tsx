@@ -10,7 +10,24 @@ export default function Home({onNavigate, locale}: HomeProps) {
   const isAr = locale === 'ar';
 
   return (
-    <div className="flex-1 w-full px-5 py-6 space-y-8 overflow-y-auto no-scrollbar">
+    <div className="relative flex-1 w-full px-5 py-6 space-y-8 overflow-y-auto no-scrollbar">
+      {/* Absolute high-tech vector waves and grid overlay matching the background of the reference image */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 opacity-20">
+        <svg className="absolute w-full h-[700px] top-0 left-0 text-[#14d8ff]" fill="none" viewBox="0 0 375 700">
+          <path d="M-50,120 Q80,20 187,150 T425,90" stroke="currentColor" strokeWidth="1" />
+          <path d="M-50,135 Q80,35 187,165 T425,105" stroke="currentColor" strokeWidth="0.5" strokeDasharray="2 4" />
+          <path d="M-50,105 Q80,5 187,135 T425,75" stroke="currentColor" strokeWidth="0.5" opacity="0.5" />
+          
+          <path d="M-50,340 C80,240 137,410 425,280" stroke="currentColor" strokeWidth="0.8" />
+          <path d="M-50,355 C80,255 137,425 425,295" stroke="currentColor" strokeWidth="0.5" strokeDasharray="3 3" />
+          
+          <pattern id="home-bg-grid" width="30" height="30" patternUnits="userSpaceOnUse">
+            <path d="M 30 0 L 0 0 0 30" fill="none" stroke="currentColor" strokeWidth="0.2" opacity="0.3" />
+          </pattern>
+          <rect width="100%" height="100%" fill="url(#home-bg-grid)" />
+        </svg>
+      </div>
+
       {/* Hero Header */}
       <motion.section 
         initial={{opacity: 0, y: 15}}
@@ -27,22 +44,28 @@ export default function Home({onNavigate, locale}: HomeProps) {
           </svg>
         </div>
 
-        <h1 className="text-2xl font-black text-white tracking-wide">
+        <h1 className="text-2xl font-extrabold text-white tracking-wide">
           د. مصطفى الرفاعي
         </h1>
-        <h2 className="text-xl font-bold text-[#14d8ff] drop-shadow-[0_0_10px_rgba(20,216,255,0.4)]">
+        <h2 className="text-xl font-bold text-[#14d8ff] drop-shadow-[0_0_12px_rgba(20,216,255,0.5)]">
           Dr. Mustafa Al-Rifai
         </h2>
-        <div className="flex items-center justify-center gap-3 mt-1.5">
-          <span className="w-5 h-[1.5px] bg-[#14d8ff]/40"></span>
-          <span className="text-sm font-bold text-white tracking-wide">
-            طب وتجميل الأسنان
-          </span>
-          <span className="w-5 h-[1.5px] bg-[#14d8ff]/40"></span>
+        
+        {/* Symmetric subtitle rows with line dividers to match reference image */}
+        <div className="flex flex-col items-center gap-1.5 mt-2">
+          <div className="flex items-center justify-center gap-3">
+            <span className="w-6 h-[1px] bg-gradient-to-r from-transparent to-[#14d8ff]/60"></span>
+            <span className="text-sm font-bold text-white tracking-wide">
+              طب وتجميل الأسنان
+            </span>
+            <span className="w-6 h-[1px] bg-gradient-to-l from-transparent to-[#14d8ff]/60"></span>
+          </div>
+          <div className="flex items-center justify-center gap-2 text-[10px] text-[#859398] font-semibold tracking-widest uppercase">
+            <span className="w-5 h-[1px] bg-gradient-to-r from-transparent to-[#14d8ff]/30"></span>
+            <span>Dental Care & Aesthetics</span>
+            <span className="w-5 h-[1px] bg-gradient-to-l from-transparent to-[#14d8ff]/30"></span>
+          </div>
         </div>
-        <p className="text-[11px] text-[#859398] font-bold tracking-widest uppercase">
-          Dental Care & Aesthetics
-        </p>
       </motion.section>
 
       {/* Interactive 3D Holographic Stage */}
@@ -154,7 +177,7 @@ export default function Home({onNavigate, locale}: HomeProps) {
             </svg>
           </motion.button>
 
-          {/* Node 3 (Explorer Tooth): Top Right */}
+          {/* Node 3 (Orthodontics Tooth): Top Right */}
           <motion.button
             onClick={() => onNavigate('services')}
             animate={{y: [0, -5, 0]}}
@@ -162,9 +185,12 @@ export default function Home({onNavigate, locale}: HomeProps) {
             className="absolute right-8 top-[16%] w-[60px] h-[60px] bg-[#09151c]/90 border border-[#14d8ff]/50 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(20,216,255,0.4)] pointer-events-auto cursor-pointer hover:scale-110 active:scale-95 transition-all duration-300"
           >
             <svg viewBox="0 0 100 100" className="w-8 h-8 text-[#14d8ff]" fill="none" stroke="currentColor" strokeWidth="4">
-              <path d="M 50 20 C 38 20, 32 23, 32 35 C 32 45, 38 48, 42 56 C 44 60, 50 60, 50 55 C 50 60, 56 60, 58 56 C 62 48, 68 45, 68 35 C 68 23, 62 20, 50 20 Z" strokeLinejoin="round" />
-              <path d="M 22 78 C 22 45, 18 35, 30 25" strokeWidth="3" strokeLinecap="round" />
-              <path d="M 22 78 L 15 85" strokeWidth="4.5" strokeLinecap="round" />
+              <path d="M 50 20 C 32 20, 23 25, 23 40 C 23 53, 30 60, 33 79 C 34 86, 41 88, 45 85 C 47 83, 50 81, 50 75 C 50 81, 53 81, 55 85 C 59 88, 66 86, 67 79 C 70 60, 77 53, 77 40 C 77 25, 68 20, 50 20 Z" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M 23 44 C 35 46.5, 65 46.5, 77 44" stroke="#14d8ff" strokeWidth="3.5" strokeLinecap="round" />
+              <rect x="44" y="40" width="12" height="10" rx="1.5" fill="#14d8ff" stroke="none" />
+              <path d="M 50 36 L 50 54" stroke="#14d8ff" strokeWidth="2.5" />
+              <rect x="31" y="39" width="8" height="8" rx="1" fill="#14d8ff" stroke="none" />
+              <rect x="61" y="39" width="8" height="8" rx="1" fill="#14d8ff" stroke="none" />
             </svg>
           </motion.button>
 
@@ -255,13 +281,13 @@ export default function Home({onNavigate, locale}: HomeProps) {
           <button 
             key={item.id}
             onClick={() => onNavigate('services')}
-            className="flex flex-col items-center justify-center p-3.5 border border-[#14d8ff]/15 bg-gradient-to-b from-[#09151c]/70 to-[#03090c]/90 rounded-[22px] shadow-[inset_0_1px_1px_rgba(255,255,255,0.05),0_8px_20px_rgba(0,0,0,0.6)] hover:border-[#14d8ff]/40 hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer"
+            className="flex flex-col items-center justify-center p-3.5 border border-[#14d8ff]/25 bg-gradient-to-b from-[#041d2d]/90 to-[#010e17]/95 rounded-[20px] shadow-[inset_0_1px_2px_rgba(20,216,255,0.15),0_6px_16px_rgba(0,0,0,0.7)] hover:border-[#14d8ff]/50 hover:scale-[1.03] active:scale-95 transition-all duration-300 cursor-pointer"
           >
-            {item.svg}
-            <span className="text-[10px] font-bold text-center text-white leading-tight mt-3">
+            <div className="filter drop-shadow-[0_0_8px_rgba(20,216,255,0.35)]">{item.svg}</div>
+            <span className="text-[11px] font-bold text-center text-white leading-tight mt-3 tracking-wide">
               {item.labelAr}
             </span>
-            <span className="text-[8px] text-[#859398] uppercase leading-none font-bold text-center mt-1">
+            <span className="text-[8px] text-[#859398] uppercase leading-none font-semibold text-center mt-1 tracking-wider">
               {item.labelEn}
             </span>
           </button>

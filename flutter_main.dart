@@ -668,7 +668,6 @@ class HomeScreen extends StatelessWidget {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: const Color(0xFF14D8FF).withOpacity(0.08),
-                          filter: const ColorFilter.mode(Color(0xFF14D8FF), BlendMode.dstIn),
                         ),
                       ),
                     ],
