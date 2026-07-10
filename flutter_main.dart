@@ -226,7 +226,7 @@ class _MainLayoutScreenState extends State<MainLayoutScreen> {
           label,
           style: TextStyle(
             fontSize: 10,
-            fontWeight: FontWeight.black,
+            fontWeight: FontWeight.w900,
             color: isSelected ? const Color(0xFF001F27) : const Color(0xFF859398),
           ),
         ),
@@ -245,7 +245,7 @@ class _MainLayoutScreenState extends State<MainLayoutScreen> {
             children: [
               // Drawer Header
               Row(
-                mainAxisAlignment: MainAxisAlignment.between,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
                     children: [
@@ -562,7 +562,7 @@ class HomeScreen extends StatelessWidget {
             isAr ? 'تصميم رقمي لابتسامتك الأنسب' : 'Digital Smile Design',
             style: const TextStyle(
               fontSize: 22,
-              fontWeight: FontWeight.black,
+              fontWeight: FontWeight.w900,
               letterSpacing: -0.5,
               color: Colors.white,
             ),
@@ -608,7 +608,7 @@ class HomeScreen extends StatelessWidget {
                     isAr ? 'احجز استشارتك المجانية الآن' : 'Book Free Consultation',
                     style: const TextStyle(
                       fontSize: 14,
-                      fontWeight: FontWeight.black,
+                      fontWeight: FontWeight.w900,
                       color: Color(0xFF001F27),
                     ),
                   ),
@@ -683,7 +683,7 @@ class HomeScreen extends StatelessWidget {
               val,
               style: const TextStyle(
                 fontSize: 20,
-                fontWeight: FontWeight.black,
+                fontWeight: FontWeight.w900,
                 color: Color(0xFF14D8FF),
               ),
             ),
@@ -749,7 +749,7 @@ class ServicesScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.between,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     item['title']!,
@@ -941,7 +941,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
                   child: Align(
                     alignment: Alignment.bottomLeft,
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.between,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           item['title']!,
@@ -1120,7 +1120,7 @@ class _BookingScreenState extends State<BookingScreen> {
                 child: Center(
                   child: Text(
                     isAr ? 'إرسال طلب الحجز' : 'Request Appointment',
-                    style: const TextStyle(fontWeight: FontWeight.black, fontSize: 13, color: Color(0xFF001F27)),
+                    style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 13, color: Color(0xFF001F27)),
                   ),
                 ),
               ),
@@ -1172,7 +1172,7 @@ class AboutScreen extends StatelessWidget {
                   children: [
                     Text(
                       isAr ? 'د. مصطفى الرفاعي' : 'Dr. Mustafa Al-Rifai',
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.black, color: Colors.white),
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: Colors.white),
                     ),
                     const SizedBox(height: 4),
                     Text(
