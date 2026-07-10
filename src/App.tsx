@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import {Tab} from './types';
 import Home from './components/Home';
 import Services from './components/Services';
@@ -6,6 +6,7 @@ import About from './components/About';
 import Gallery from './components/Gallery';
 import Contact from './components/Contact';
 import Booking from './components/Booking';
+import { getSettings, getDoctors, getServices, getGallery, isSupabaseConfigured } from './supabaseClient';
 import {
   Menu,
   X,
@@ -31,7 +32,36 @@ export default function App() {
   const [locale, setLocale] = useState<'ar' | 'en'>('ar');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
+  // Supabase states
+  const [settings, setSettings] = useState<any>(null);
+  const [doctors, setDoctors] = useState<any[]>([]);
+  const [servicesList, setServicesList] = useState<any[]>([]);
+  const [galleryList, setGalleryList] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   const isAr = locale === 'ar';
+
+  useEffect(() => {
+    async function loadAllClinicData() {
+      try {
+        const [settingsData, doctorsData, servicesData, galleryData] = await Promise.all([
+          getSettings(),
+          getDoctors(),
+          getServices(),
+          getGallery()
+        ]);
+        setSettings(settingsData);
+        setDoctors(doctorsData);
+        setServicesList(servicesData);
+        setGalleryList(galleryData);
+      } catch (err) {
+        console.error('Supabase clinic loading error:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadAllClinicData();
+  }, []);
 
   const menuItems = [
     {
@@ -67,16 +97,44 @@ export default function App() {
   ];
 
   const renderContent = () => {
+    const activeDoctor = doctors[0] || null;
     switch (activeTab) {
-      case 'home': return <Home onNavigate={setActiveTab} locale={locale} />;
-      case 'services': return <Services locale={locale} />;
-      case 'gallery': return <Gallery locale={locale} />;
-      case 'about': return <About locale={locale} />;
-      case 'contact': return <Contact locale={locale} />;
-      case 'booking': return <Booking locale={locale} />;
-      default: return <Home onNavigate={setActiveTab} locale={locale} />;
+      case 'home': 
+        return <Home onNavigate={setActiveTab} locale={locale} settings={settings} doctor={activeDoctor} services={servicesList} />;
+      case 'services': 
+        return <Services locale={locale} services={servicesList} />;
+      case 'gallery': 
+        return <Gallery locale={locale} gallery={galleryList} />;
+      case 'about': 
+        return <About locale={locale} doctor={activeDoctor} />;
+      case 'contact': 
+        return <Contact locale={locale} settings={settings} />;
+      case 'booking': 
+        return <Booking locale={locale} doctor={activeDoctor} services={servicesList} />;
+      default: 
+        return <Home onNavigate={setActiveTab} locale={locale} settings={settings} doctor={activeDoctor} services={servicesList} />;
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col h-screen bg-[#000a12] text-[#dde4e6] font-sans items-center justify-center space-y-4">
+        <div className="relative">
+          <div className="w-16 h-16 rounded-full border-4 border-[#14d8ff]/20 border-t-[#14d8ff] animate-spin"></div>
+          <div className="absolute inset-0 bg-[#14d8ff]/10 rounded-full blur-md animate-pulse"></div>
+        </div>
+        <div className="text-center">
+          <p className="text-xs text-accent font-bold tracking-widest uppercase">
+            {isAr ? 'جاري تحميل البيانات الرقمية...' : 'Loading Clinical Telemetry...'}
+          </p>
+          <p className="text-[10px] text-[#859398] mt-1 uppercase font-semibold">
+            {isAr ? 'الاتصال بخوادم العيادة الفاخرة' : 'Connecting to Premium Database'}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
 
   // Get dynamic header configuration based on active tab and language
   const getHeaderConfig = () => {
@@ -260,17 +318,17 @@ export default function App() {
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full border border-accent/40 overflow-hidden">
                       <img 
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQGk9T8T-E-dTpTss5FQxeaLgfuT6D7b8knwLxoma7ZhneQUbTV6jegwf83Rz3Wsi-1ojfZUr4lObSfdbX8qJs_GRO-1BDl9AUgNUb0Z60o8xRS9X-FtvMzMNib-qoykcBsefefS1Hhaf0u5mEuLb83liLjH7sos8ZJOA7njPRorV-taMls7PyH_FyRFsPwcu0h8c2UUGlTi9rSDRoelBrHe30tc3qJpL7eQi6euwC_Dofi6FIaIkTEyIqa6zWRKrNA2ZqGbxXlPo" 
+                        src={doctors[0]?.image_url || "https://lh3.googleusercontent.com/aida-public/AB6AXuBQGk9T8T-E-dTpTss5FQxeaLgfuT6D7b8knwLxoma7ZhneQUbTV6jegwf83Rz3Wsi-1ojfZUr4lObSfdbX8qJs_GRO-1BDl9AUgNUb0Z60o8xRS9X-FtvMzMNib-qoykcBsefefS1Hhaf0u5mEuLb83liLjH7sos8ZJOA7njPRorV-taMls7PyH_FyRFsPwcu0h8c2UUGlTi9rSDRoelBrHe30tc3qJpL7eQi6euwC_Dofi6FIaIkTEyIqa6zWRKrNA2ZqGbxXlPo"} 
                         className="w-full h-full object-cover" 
                         alt="Dr. Mustafa Portrait" 
                       />
                     </div>
                     <div>
                       <h4 className="font-extrabold text-sm text-[#dde4e6]">
-                        {isAr ? 'د. مصطفى الرفاعي' : 'Dr. Mustafa Al-Rifai'}
+                        {isAr ? (doctors[0]?.full_name_ar || 'د. مصطفى الرفاعي') : (doctors[0]?.full_name_en || 'Dr. Mustafa Al-Rifai')}
                       </h4>
                       <p className="text-[10px] text-accent font-semibold uppercase tracking-wider">
-                        {isAr ? 'استشاري تجميل الأسنان' : 'Dental aesthetics'}
+                        {isAr ? (doctors[0]?.title_ar || 'استشاري تجميل الأسنان') : (doctors[0]?.title_en || 'Dental aesthetics')}
                       </p>
                     </div>
                   </div>
@@ -289,10 +347,10 @@ export default function App() {
                   <span className="text-[9px] font-bold text-accent uppercase tracking-widest block">
                     {isAr ? 'فلسفة العيادة الذكية' : 'Smart clinical philosophy'}
                   </span>
-                  <p className="text-xs text-[#859398] leading-relaxed text-justify">
+                  <p className="text-xs text-[#859398] leading-relaxed text-justify line-clamp-4">
                     {isAr 
-                      ? 'عيادة تجميل وزراعة الأسنان المتخصصة والمجهزة بأرقى تقنيات المسح الضوئي الرقمية والنمذجة لتصميم الابتسامة الأنسب لملامحك وبدون أي ألم.'
-                      : 'Specialized dental care clinic outfitted with digital imaging & modeling systems to craft your perfect smile, pain-free.'}
+                      ? (doctors[0]?.about_ar || 'عيادة تجميل وزراعة الأسنان المتخصصة والمجهزة بأرقى تقنيات المسح الضوئي الرقمية والنمذجة لتصميم الابتسامة الأنسب لملامحك وبدون أي ألم.')
+                      : (doctors[0]?.about_en || 'Specialized dental care clinic outfitted with digital imaging & modeling systems to craft your perfect smile, pain-free.')}
                   </p>
                 </div>
 
@@ -334,18 +392,18 @@ export default function App() {
                   </span>
                   
                   <a 
-                    href="tel:+97145551234"
+                    href={`tel:${settings?.phone || '+97145551234'}`}
                     className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 hover:border-accent/30 transition-all cursor-pointer"
                   >
                     <Phone size={16} className="text-accent" />
                     <div>
                       <p className="text-[10px] text-[#859398] leading-none mb-0.5">{isAr ? 'رقم العيادة' : 'Clinic Telephone'}</p>
-                      <p className="text-xs font-bold text-[#dde4e6]" dir="ltr">+971 4 555 1234</p>
+                      <p className="text-xs font-bold text-[#dde4e6]" dir="ltr">{settings?.phone || '+971 4 555 1234'}</p>
                     </div>
                   </a>
 
                   <a 
-                    href="https://wa.me/971509876543"
+                    href={`https://wa.me/${(settings?.whatsapp || '971509876543').replace(/\+/g, '').replace(/\s/g, '')}`}
                     target="_blank"
                     rel="noreferrer"
                     className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 hover:border-green-500/30 transition-all cursor-pointer"
@@ -353,7 +411,7 @@ export default function App() {
                     <MessageSquare size={16} className="text-green-400" />
                     <div>
                       <p className="text-[10px] text-[#859398] leading-none mb-0.5">{isAr ? 'الواتساب الطبي' : 'Clinical WhatsApp'}</p>
-                      <p className="text-xs font-bold text-[#dde4e6]" dir="ltr">+971 50 987 6543</p>
+                      <p className="text-xs font-bold text-[#dde4e6]" dir="ltr">{settings?.whatsapp || '+971 50 987 6543'}</p>
                     </div>
                   </a>
 
@@ -369,7 +427,7 @@ export default function App() {
                     <MapPin size={16} className="text-accent" />
                     <div>
                       <p className="text-[10px] text-[#859398] leading-none mb-0.5">{isAr ? 'عنوان العيادة' : 'Our Address'}</p>
-                      <p className="text-xs font-bold text-[#dde4e6]">{isAr ? 'جميرا، دبي' : 'Jumeirah, Dubai'}</p>
+                      <p className="text-xs font-bold text-[#dde4e6]">{isAr ? (settings?.address_ar || 'جميرا، دبي') : (settings?.address_en || 'Jumeirah, Dubai')}</p>
                     </div>
                   </a>
                 </div>
@@ -381,18 +439,22 @@ export default function App() {
                     <span className="text-[10px] font-bold uppercase tracking-wider">{isAr ? 'ساعات الحضور' : 'Clinical Schedule'}</span>
                   </div>
                   <div className="text-[10px] space-y-1 text-[#859398]">
-                    <div className="flex justify-between">
-                      <span>{isAr ? 'الأحد - الخميس:' : 'Sun - Thu:'}</span>
-                      <span className="font-bold text-[#dde4e6]">09:00 - 20:00</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>{isAr ? 'الجمعة:' : 'Friday:'}</span>
-                      <span className="font-bold text-[#dde4e6]">10:00 - 18:00</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>{isAr ? 'السبت:' : 'Saturday:'}</span>
-                      <span className="font-semibold text-accent">{isAr ? 'مغلق' : 'Closed'}</span>
-                    </div>
+                    {(isAr 
+                      ? (settings?.working_hours_ar ? settings.working_hours_ar.split('|') : ['الأحد - الخميس: 09:00 - 20:00', 'الجمعة: 10:00 - 18:00', 'السبت: مغلق'])
+                      : (settings?.working_hours_en ? settings.working_hours_en.split('|') : ['Sun - Thu: 09:00 - 20:00', 'Friday: 10:00 - 18:00', 'Saturday: Closed'])
+                    ).map((line: string, index: number) => {
+                      const parts = line.split(':');
+                      const title = parts[0] || '';
+                      const time = parts.slice(1).join(':') || '';
+                      return (
+                        <div key={index} className="flex justify-between">
+                          <span>{title}:</span>
+                          <span className={`font-semibold ${time.includes('مغلق') || time.toLowerCase().includes('closed') ? 'text-accent' : 'text-[#dde4e6]'}`}>
+                            {time}
+                          </span>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               </div>

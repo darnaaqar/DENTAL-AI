@@ -3,10 +3,22 @@ import {Phone, MessageCircle, MapPin, Clock} from 'lucide-react';
 
 interface ContactProps {
   locale: 'ar' | 'en';
+  settings: any;
 }
 
-export default function Contact({locale}: ContactProps) {
+export default function Contact({locale, settings}: ContactProps) {
   const isAr = locale === 'ar';
+
+  const workingHoursList = (isAr 
+    ? (settings?.working_hours_ar ? settings.working_hours_ar.split('|') : ['الأحد - الخميس: 09:00 صباحاً - 08:00 مساءً', 'الجمعة: 10:00 صباحاً - 06:00 مساءً', 'السبت: مغلق (عطلة رسمية)'])
+    : (settings?.working_hours_en ? settings.working_hours_en.split('|') : ['Sunday - Thursday: 09:00 AM - 08:00 PM', 'Friday: 10:00 AM - 06:00 PM', 'Saturday: Closed (Official Holiday)'])
+  ).map((line: string) => {
+    const parts = line.split(':');
+    const day = parts[0] || '';
+    const time = parts.slice(1).join(':') || '';
+    const closed = time.includes('مغلق') || time.toLowerCase().includes('closed');
+    return { day, time, closed };
+  });
 
   return (
     <div className="flex-1 w-full px-5 py-6 space-y-8 overflow-y-auto no-scrollbar" dir={isAr ? 'rtl' : 'ltr'}>
@@ -39,16 +51,21 @@ export default function Contact({locale}: ContactProps) {
               </span>
               <div className="flex items-center gap-2">
                 <span className="text-xs text-[#dde4e6] font-medium">
-                  {isAr ? 'جميرا، دبي، الإمارات' : 'Jumeirah, Dubai, UAE'}
+                  {isAr ? (settings?.address_ar || 'جميرا، دبي، الإمارات') : (settings?.address_en || 'Jumeirah, Dubai, UAE')}
                 </span>
                 <span className="w-2 h-2 rounded-full bg-accent animate-ping shrink-0"></span>
               </div>
             </div>
           </div>
           <div className={`absolute bottom-4 z-10 ${isAr ? 'left-4' : 'right-4'}`}>
-            <button className="bg-accent hover:opacity-90 text-[#001f27] px-5 py-2 rounded-xl font-bold text-[9px] uppercase tracking-wider shadow-lg shadow-accent/20 active:scale-95 transition-all cursor-pointer">
+            <a 
+              href="https://maps.google.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="bg-accent hover:opacity-90 text-[#001f27] px-5 py-2 rounded-xl font-bold text-[9px] uppercase tracking-wider shadow-lg shadow-accent/20 active:scale-95 transition-all cursor-pointer inline-block"
+            >
               {isAr ? 'فتح في خرائط Google' : 'Open in Google Maps'}
-            </button>
+            </a>
           </div>
           <div className="scan-animation"></div>
         </div>
@@ -56,7 +73,7 @@ export default function Contact({locale}: ContactProps) {
         {/* Contact Links */}
         <div className="space-y-4">
           <a 
-            href="tel:+97145551234"
+            href={`tel:${settings?.phone || '+97145551234'}`}
             className="glass-card p-4 rounded-xl flex items-center gap-4 group hover:border-accent/40 transition-colors cursor-pointer"
           >
             <div className="w-12 h-12 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent group-hover:scale-110 transition-all shrink-0">
@@ -67,13 +84,13 @@ export default function Contact({locale}: ContactProps) {
                 {isAr ? 'الهاتف المباشر للعيادة' : 'Direct Clinic Phone'}
               </p>
               <h3 className="text-base font-bold text-[#dde4e6]" dir="ltr">
-                +971 4 555 1234
+                {settings?.phone || '+971 4 555 1234'}
               </h3>
             </div>
           </a>
 
           <a 
-            href="https://wa.me/971509876543"
+            href={`https://wa.me/${(settings?.whatsapp || '971509876543').replace(/\+/g, '').replace(/\s/g, '')}`}
             target="_blank"
             rel="noreferrer"
             className="glass-card p-4 rounded-xl flex items-center gap-4 group hover:border-green-500/40 transition-colors cursor-pointer"
@@ -86,7 +103,7 @@ export default function Contact({locale}: ContactProps) {
                 {isAr ? 'واتساب الاستشارات السريع' : 'Instant WhatsApp Consult'}
               </p>
               <h3 className="text-base font-bold text-[#dde4e6]" dir="ltr">
-                +971 50 987 6543
+                {settings?.whatsapp || '+971 50 987 6543'}
               </h3>
             </div>
           </a>
@@ -101,21 +118,7 @@ export default function Contact({locale}: ContactProps) {
             </h3>
           </div>
           <ul className="space-y-3.5">
-            {[
-              {
-                day: isAr ? 'الأحد - الخميس' : 'Sunday - Thursday',
-                time: isAr ? '09:00 صباحاً - 08:00 مساءً' : '09:00 AM - 08:00 PM'
-              },
-              {
-                day: isAr ? 'الجمعة' : 'Friday',
-                time: isAr ? '10:00 صباحاً - 06:00 مساءً' : '10:00 AM - 06:00 PM'
-              },
-              {
-                day: isAr ? 'السبت' : 'Saturday',
-                time: isAr ? 'مغلق (عطلة رسمية)' : 'Closed (Official Holiday)',
-                closed: true
-              },
-            ].map((item, i) => (
+            {workingHoursList.map((item, i) => (
               <li key={i} className="flex justify-between items-center text-xs leading-none">
                 <span className="text-[#859398] font-semibold">{item.day}</span>
                 <span className={`font-bold ${item.closed ? 'text-accent' : 'text-[#dde4e6]'}`}>

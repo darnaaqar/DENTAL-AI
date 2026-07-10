@@ -3,15 +3,16 @@ import {GraduationCap, Briefcase, Microscope, Calendar} from 'lucide-react';
 
 interface AboutProps {
   locale: 'ar' | 'en';
+  doctor: any;
 }
 
-export default function About({locale}: AboutProps) {
+export default function About({locale, doctor}: AboutProps) {
   const isAr = locale === 'ar';
 
   const stats = [
     {
       label: isAr ? 'سنوات الخبرة' : 'Years Experience',
-      value: '+15',
+      value: `+${doctor?.experience_years || '15'}`,
       color: 'text-accent'
     },
     {
@@ -26,23 +27,23 @@ export default function About({locale}: AboutProps) {
     },
   ];
 
-  const qualifications = [
-    {
-      title: isAr ? 'ماجستير في طب الأسنان التجميلي' : 'Master in Cosmetic Dentistry',
-      en: 'International Academy of Cosmetic Dentistry',
-      icon: GraduationCap
-    },
-    {
-      title: isAr ? 'عضو الجمعية الأمريكية لطب الأسنان' : 'Member of ADA',
-      en: 'American Dental Association (ADA)',
-      icon: GraduationCap
-    },
-    {
-      title: isAr ? 'دورات متقدمة في زراعة وتجميل الأسنان' : 'Advanced Dental Implant Specialist',
-      en: 'Advanced Courses in Implants & Aesthetics',
-      icon: Microscope
-    },
-  ];
+  const parsedQualificationsAr = doctor?.qualifications_ar 
+    ? doctor.qualifications_ar.split('|') 
+    : [
+        'ماجستير في طب الأسنان التجميلي - الأكاديمية الدولية لطب الأسنان التجميلي',
+        'عضو الجمعية الأمريكية لطب الأسنان (ADA)',
+        'دورات متقدمة في زراعة وتجميل الأسنان والنمذجة ثلاثية الأبعاد'
+      ];
+
+  const parsedQualificationsEn = doctor?.qualifications_en 
+    ? doctor.qualifications_en.split('|') 
+    : [
+        'Master in Cosmetic Dentistry - International Academy of Cosmetic Dentistry',
+        'Member of ADA - American Dental Association',
+        'Advanced Dental Implant Specialist - Implants & Aesthetics'
+      ];
+
+  const qualifications = isAr ? parsedQualificationsAr : parsedQualificationsEn;
 
   return (
     <div className="flex-1 w-full px-5 py-6 space-y-8 overflow-y-auto no-scrollbar" dir={isAr ? 'rtl' : 'ltr'}>
@@ -51,7 +52,7 @@ export default function About({locale}: AboutProps) {
           <div className="absolute -inset-1 bg-accent/20 rounded-full blur-xl animate-pulse"></div>
           <div className="relative w-40 h-40 rounded-full border-2 border-accent/50 p-1.5 overflow-hidden shadow-[0_0_30px_rgba(20,216,255,0.3)]">
             <img 
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQGk9T8T-E-dTpTss5FQxeaLgfuT6D7b8knwLxoma7ZhneQUbTV6jegwf83Rz3Wsi-1ojfZUr4lObSfdbX8qJs_GRO-1BDl9AUgNUb0Z60o8xRS9X-FtvMzMNib-qoykcBsefefS1Hhaf0u5mEuLb83liLjH7sos8ZJOA7njPRorV-taMls7PyH_FyRFsPwcu0h8c2UUGlTi9rSDRoelBrHe30tc3qJpL7eQi6euwC_Dofi6FIaIkTEyIqa6zWRKrNA2ZqGbxXlPo" 
+              src={doctor?.image_url || "https://lh3.googleusercontent.com/aida-public/AB6AXuBQGk9T8T-E-dTpTss5FQxeaLgfuT6D7b8knwLxoma7ZhneQUbTV6jegwf83Rz3Wsi-1ojfZUr4lObSfdbX8qJs_GRO-1BDl9AUgNUb0Z60o8xRS9X-FtvMzMNib-qoykcBsefefS1Hhaf0u5mEuLb83liLjH7sos8ZJOA7njPRorV-taMls7PyH_FyRFsPwcu0h8c2UUGlTi9rSDRoelBrHe30tc3qJpL7eQi6euwC_Dofi6FIaIkTEyIqa6zWRKrNA2ZqGbxXlPo"} 
               className="w-full h-full rounded-full object-cover"
               alt="Dr. Mustafa"
             />
@@ -59,10 +60,10 @@ export default function About({locale}: AboutProps) {
         </div>
         <div className="space-y-1">
           <h2 className="text-2xl font-bold text-accent neon-glow">
-            {isAr ? 'د. مصطفى الرفاعي' : 'Dr. Mustafa Al-Rifai'}
+            {isAr ? (doctor?.full_name_ar || 'د. مصطفى الرفاعي') : (doctor?.full_name_en || 'Dr. Mustafa Al-Rifai')}
           </h2>
           <p className="text-[#bbc9ce] opacity-80 text-sm">
-            {isAr ? 'استشاري طب وتجميل الأسنان' : 'Consultant in Dental Care & Aesthetics'}
+            {isAr ? (doctor?.title_ar || 'استشاري طب وتجميل الأسنان') : (doctor?.title_en || 'Consultant in Dental Care & Aesthetics')}
           </p>
           <p className="text-accent text-[9px] font-bold tracking-widest uppercase mt-1">
             {isAr ? 'تكنولوجيا الغد لرعاية أسنانك اليوم' : "Tomorrow's Tech for Today's Teeth"}
@@ -91,15 +92,17 @@ export default function About({locale}: AboutProps) {
         </div>
         <div className="space-y-3">
           {qualifications.map((q, i) => {
-            const Icon = q.icon;
+            const parts = q.split(' - ');
+            const title = parts[0] || '';
+            const subtitle = parts[1] || '';
             return (
               <div key={i} className="glass-card p-4 rounded-xl flex items-start gap-4 hover:border-accent/40 transition-colors">
                 <div className="bg-accent/10 p-2 rounded-lg shrink-0">
-                  <Icon className="text-accent" size={20} />
+                  <GraduationCap className="text-accent" size={20} />
                 </div>
                 <div>
-                  <h4 className="font-bold text-accent text-sm">{q.title}</h4>
-                  <p className="text-[#bbc9ce] text-xs mt-1 leading-snug">{q.en}</p>
+                  <h4 className="font-bold text-accent text-sm">{title}</h4>
+                  {subtitle && <p className="text-[#bbc9ce] text-xs mt-1 leading-snug">{subtitle}</p>}
                 </div>
               </div>
             );
@@ -117,8 +120,8 @@ export default function About({locale}: AboutProps) {
         </div>
         <p className="text-[#bbc9ce] leading-relaxed text-sm text-justify">
           {isAr 
-            ? 'نؤمن بأن الابتسامة هي نافذة الروح، لذلك نسخر أحدث تقنيات الذكاء الاصطناعي والنمذجة ثلاثية الأبعاد لنمنح مرضانا أدق النتائج وأجمل المظاهر، مع ضمان تجربة علاجية فاخرة وخالية من الألم تماماً.'
-            : 'We believe a smile is the window to the soul. Thus, we utilize cutting-edge AI and 3D modeling to deliver the most precise and stunning results, ensuring a completely premium, painless clinical experience.'}
+            ? (doctor?.about_ar || 'نؤمن بأن الابتسامة هي نافذة الروح، لذلك نسخر أحدث تقنيات الذكاء الاصطناعي والنمذجة ثلاثية الأبعاد لنمنح مرضانا أدق النتائج وأجمل المظاهر، مع ضمان تجربة علاجية فاخرة وخالية من الألم تماماً.')
+            : (doctor?.about_en || 'We believe a smile is the window to the soul. Thus, we utilize cutting-edge AI and 3D modeling to deliver the most precise and stunning results, ensuring a completely premium, painless clinical experience.')}
         </p>
       </section>
 

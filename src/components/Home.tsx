@@ -4,10 +4,14 @@ import {Tab} from '../types';
 interface HomeProps {
   onNavigate: (tab: Tab) => void;
   locale: 'ar' | 'en';
+  settings?: any;
+  doctor?: any;
+  services?: any[];
 }
 
-export default function Home({onNavigate, locale}: HomeProps) {
+export default function Home({onNavigate, locale, settings, doctor, services}: HomeProps) {
   const isAr = locale === 'ar';
+
 
   return (
     <div className="relative flex-1 w-full px-5 py-6 space-y-8 overflow-y-auto no-scrollbar">
@@ -45,10 +49,10 @@ export default function Home({onNavigate, locale}: HomeProps) {
         </div>
 
         <h1 className="text-2xl font-extrabold text-white tracking-wide">
-          د. مصطفى الرفاعي
+          {doctor?.full_name_ar || 'د. مصطفى الرفاعي'}
         </h1>
         <h2 className="text-xl font-bold text-[#14d8ff] drop-shadow-[0_0_12px_rgba(20,216,255,0.5)]">
-          Dr. Mustafa Al-Rifai
+          {doctor?.full_name_en || 'Dr. Mustafa Al-Rifai'}
         </h2>
         
         {/* Symmetric subtitle rows with line dividers to match reference image */}
@@ -56,13 +60,13 @@ export default function Home({onNavigate, locale}: HomeProps) {
           <div className="flex items-center justify-center gap-3">
             <span className="w-6 h-[1px] bg-gradient-to-r from-transparent to-[#14d8ff]/60"></span>
             <span className="text-sm font-bold text-white tracking-wide">
-              طب وتجميل الأسنان
+              {doctor?.title_ar || 'طب وتجميل الأسنان'}
             </span>
             <span className="w-6 h-[1px] bg-gradient-to-l from-transparent to-[#14d8ff]/60"></span>
           </div>
           <div className="flex items-center justify-center gap-2 text-[10px] text-[#859398] font-semibold tracking-widest uppercase">
             <span className="w-5 h-[1px] bg-gradient-to-r from-transparent to-[#14d8ff]/30"></span>
-            <span>Dental Care & Aesthetics</span>
+            <span>{doctor?.title_en || 'Dental Care & Aesthetics'}</span>
             <span className="w-5 h-[1px] bg-gradient-to-l from-transparent to-[#14d8ff]/30"></span>
           </div>
         </div>
@@ -217,10 +221,10 @@ export default function Home({onNavigate, locale}: HomeProps) {
         className="text-center space-y-1"
       >
         <p className="text-lg font-bold text-white tracking-wide">
-          إبتسامة صحية.. مظهر أجمل.. حياة أفضل
+          {settings?.slogan_ar || 'إبتسامة صحية.. مظهر أجمل.. حياة أفضل'}
         </p>
         <p className="text-sm font-bold text-[#14d8ff] tracking-tight">
-          Healthy smile.. Beautiful look.. Better life
+          {settings?.slogan_en || 'Healthy smile.. Beautiful look.. Better life'}
         </p>
       </motion.section>
 
