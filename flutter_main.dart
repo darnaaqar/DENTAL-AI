@@ -469,6 +469,65 @@ class _MainLayoutScreenState extends State<MainLayoutScreen> {
 }
 
 // ==========================================
+// TOOTH CUSTOM PAINTER FOR HEADLINE LOGO
+// ==========================================
+class ToothPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = const Color(0xFF14D8FF)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3.5
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+
+    final path = Path();
+    path.moveTo(size.width * 0.5, size.height * 0.15);
+    path.cubicTo(size.width * 0.32, size.height * 0.15, size.width * 0.23, size.height * 0.20, size.width * 0.23, size.height * 0.35);
+    path.cubicTo(size.width * 0.23, size.height * 0.48, size.width * 0.30, size.height * 0.55, size.width * 0.33, size.height * 0.74);
+    path.cubicTo(size.width * 0.34, size.height * 0.81, size.width * 0.41, size.height * 0.83, size.width * 0.45, size.height * 0.80);
+    path.cubicTo(size.width * 0.47, size.height * 0.78, size.width * 0.50, size.height * 0.76, size.width * 0.50, size.height * 0.70);
+    path.cubicTo(size.width * 0.50, size.height * 0.76, size.width * 0.53, size.height * 0.78, size.width * 0.55, size.height * 0.80);
+    path.cubicTo(size.width * 0.59, size.height * 0.83, size.width * 0.66, size.height * 0.81, size.width * 0.67, size.height * 0.74);
+    path.cubicTo(size.width * 0.70, size.height * 0.55, size.width * 0.77, size.height * 0.48, size.width * 0.77, size.height * 0.35);
+    path.cubicTo(size.width * 0.77, size.height * 0.20, size.width * 0.68, size.height * 0.15, size.width * 0.5, size.height * 0.15);
+    path.close();
+
+    // Draw background soft glowing shadow
+    canvas.drawPath(
+      path,
+      Paint()
+        ..color = const Color(0xFF14D8FF).withOpacity(0.35)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 9.0
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5.0),
+    );
+
+    canvas.drawPath(path, paint);
+
+    // Draw little sparkles on the top-right
+    final sparklePaint = Paint()
+      ..color = const Color(0xFF14D8FF)
+      ..style = PaintingStyle.fill;
+
+    final sparkle1 = Path();
+    sparkle1.moveTo(size.width * 0.68, size.height * 0.15);
+    sparkle1.lineTo(size.width * 0.70, size.height * 0.19);
+    sparkle1.lineTo(size.width * 0.74, size.height * 0.21);
+    sparkle1.lineTo(size.width * 0.70, size.height * 0.23);
+    sparkle1.lineTo(size.width * 0.68, size.height * 0.27);
+    sparkle1.lineTo(size.width * 0.66, size.height * 0.23);
+    sparkle1.lineTo(size.width * 0.62, size.height * 0.21);
+    sparkle1.lineTo(size.width * 0.66, size.height * 0.19);
+    sparkle1.close();
+    canvas.drawPath(sparkle1, sparklePaint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
+}
+
+// ==========================================
 // SCREEN 1: HOME SCREEN
 // ==========================================
 class HomeScreen extends StatelessWidget {
@@ -483,117 +542,251 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Holographic tooth mock
-          const SizedBox(height: 10),
+          // 1. Top-Center Elegant Stylized Outline Logo
           Center(
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                // Glowing background rings
-                Container(
-                  width: 220,
-                  height: 220,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF14D8FF).withOpacity(0.08),
-                        blurRadius: 40,
-                        spreadRadius: 10,
-                      )
-                    ],
-                  ),
-                ),
-                // Vector / Render Image of Holographic Smile
-                Container(
-                  width: 180,
-                  height: 180,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: const Color(0xFF14D8FF).withOpacity(0.2), width: 1.5),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(90),
-                    child: Image.network(
-                      'https://lh3.googleusercontent.com/aida-public/AB6AXuAGZ4hV595908N5p8fR3-E5N9G7882297N8zW_eG_XmD_f3V6T7U_rL_w2V4-eP5_bS2u7fW_gO99hW_hD5m_gX888-A_s998',
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: const Color(0xFF161D1F),
-                          child: const Icon(
-                            Icons.blur_circular,
-                            size: 80,
-                            color: Color(0xFF14D8FF),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-                // Scanner Overlay lines
-                Positioned(
-                  top: 40,
-                  child: Container(
-                    width: 160,
-                    height: 2,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF14D8FF),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF14D8FF).withOpacity(0.8),
-                          blurRadius: 10,
-                          spreadRadius: 1,
-                        )
-                      ],
-                    ),
-                  ),
+            child: CustomPaint(
+              size: const Size(80, 80),
+              painter: ToothPainter(),
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // Dr. Mustafa Greetings
+          const Text(
+            'د. مصطفى الرفاعي',
+            style: TextStyle(
+              fontSize: 26,
+              fontWeight: FontWeight.w900,
+              color: Colors.white,
+              letterSpacing: 0.5,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 4),
+          const Text(
+            'Dr. Mustafa Al-Rifai',
+            style: TextStyle(
+              fontSize: 21,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF14D8FF),
+              shadows: [
+                Shadow(
+                  color: Color(0xFF14D8FF),
+                  blurRadius: 10,
                 )
               ],
             ),
+            textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 12),
 
-          // Core Greetings
-          Text(
-            isAr ? 'تصميم رقمي لابتسامتك الأنسب' : 'Digital Smile Design',
-            style: const TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.w900,
-              letterSpacing: -0.5,
+          // Subtle horizontal divider with Arabic subtitle
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 24,
+                height: 1.5,
+                color: const Color(0xFF14D8FF).withOpacity(0.4),
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                child: Text(
+                  'طب وتجميل الأسنان',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              Container(
+                width: 24,
+                height: 1.5,
+                color: const Color(0xFF14D8FF).withOpacity(0.4),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          const Text(
+            'Dental Care & Aesthetics',
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF859398),
+              letterSpacing: 1.5,
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // 2. Interactive Holographic Stage
+          SizedBox(
+            height: 300,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                // Perspective background concentric rings
+                Transform(
+                  transform: Matrix4.identity()
+                    ..setEntry(3, 2, 0.001)
+                    ..rotateX(-0.5)
+                    ..rotateY(0.1),
+                  alignment: Alignment.center,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Container(
+                        width: 240,
+                        height: 240,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(color: const Color(0xFF14D8FF).withOpacity(0.4), width: 2),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF14D8FF).withOpacity(0.15),
+                              blurRadius: 30,
+                              spreadRadius: 4,
+                            )
+                          ],
+                        ),
+                      ),
+                      Container(
+                        width: 200,
+                        height: 200,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(color: const Color(0xFF03D4ED).withOpacity(0.6), width: 1.5),
+                        ),
+                      ),
+                      Container(
+                        width: 160,
+                        height: 160,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: const Color(0xFF14D8FF).withOpacity(0.08),
+                          filter: const ColorFilter.mode(Color(0xFF14D8FF), BlendMode.dstIn),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Central 3D wireframe tooth image
+                Center(
+                  child: Image.network(
+                    'https://lh3.googleusercontent.com/aida-public/AB6AXuA8IhJhiFXgCJoUCUhdnc489Z5-t5f73w8_vrm1xpYXedmkJ03q-koJmRfbOUzS_KQB0wsM6NaXDIHtJwV0K5zDDPGeUiBqxJ1vahCOg4L_EOFtulSHKST682LV0CZ5esHQYRSk_GGGGfRSBitnzecYBWkSCsJoqy8_nsg06W7xEsAhpHHHrHBwqXslITJ85aSDIxTyNuG8ThD74NSybCASpY9V3MVWaet_3GWL3yhamaVQj4dbDGJVwpsxnrt-nByMJbCOw2YSxps',
+                    width: 170,
+                    height: 170,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Icon(
+                        Icons.blur_circular,
+                        size: 90,
+                        color: Color(0xFF14D8FF),
+                      );
+                    },
+                  ),
+                ),
+
+                // Floating interactive nodes matching the screenshot
+                _buildOrbitNode(
+                  top: 50,
+                  left: 20,
+                  icon: Icons.favorite_border,
+                  onTap: () => onNavigate('services'),
+                ),
+                _buildOrbitNode(
+                  bottom: 50,
+                  left: 10,
+                  icon: Icons.bolt_outlined,
+                  onTap: () => onNavigate('services'),
+                ),
+                _buildOrbitNode(
+                  top: 30,
+                  right: 20,
+                  icon: Icons.search_outlined,
+                  onTap: () => onNavigate('services'),
+                ),
+                _buildOrbitNode(
+                  bottom: 70,
+                  right: 10,
+                  icon: Icons.star_border_outlined,
+                  onTap: () => onNavigate('services'),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // 3. Slogans
+          const Text(
+            'إبتسامة صحية.. مظهر أجمل.. حياة أفضل',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 8),
-          Text(
-            isAr
-                ? 'نصنع لك ابتسامة متناسقة بدمج الفن الطبي وأحدث تقنيات النمذجة الثلاثية الأبعاد.'
-                : 'Crafting highly customized, seamless smiles using cutting edge 3D computer rendering.',
-            style: const TextStyle(
-              fontSize: 13,
-              color: Color(0xFF859398),
-              height: 1.5,
+          const SizedBox(height: 4),
+          const Text(
+            'Healthy smile.. Beautiful look.. Better life',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF14D8FF),
             ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 28),
 
-          // Main Call to Action Button
+          // 4. Category/Service Grid Section
+          Row(
+            children: [
+              _buildServiceCard(
+                arLabel: 'تبييض الأسنان',
+                enLabel: 'Teeth Whitening',
+                icon: Icons.auto_awesome,
+                onTap: () => onNavigate('services'),
+              ),
+              _buildServiceCard(
+                arLabel: 'الفينير',
+                enLabel: 'Veneers',
+                icon: Icons.shield_outlined,
+                onTap: () => onNavigate('services'),
+              ),
+              _buildServiceCard(
+                arLabel: 'زراعة الأسنان',
+                enLabel: 'Dental Implants',
+                icon: Icons.dns_outlined,
+                onTap: () => onNavigate('services'),
+              ),
+              _buildServiceCard(
+                arLabel: 'تقويم الأسنان',
+                enLabel: 'Orthodontics',
+                icon: Icons.grid_on_outlined,
+                onTap: () => onNavigate('services'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 32),
+
+          // 5. Main Call to Action Button
           GestureDetector(
             onTap: () => onNavigate('booking'),
             child: Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 16),
+              padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF14D8FF).withOpacity(0.3),
-                    blurRadius: 20,
+                    color: const Color(0xFF14D8FF).withOpacity(0.35),
+                    blurRadius: 15,
                     offset: const Offset(0, 4),
                   )
                 ],
@@ -602,54 +795,74 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    isAr ? 'احجز استشارتك المجانية الآن' : 'Book Free Consultation',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w900,
-                      color: Color(0xFF001F27),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'احجز موعدك الآن',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w900,
+                          color: Color(0xFF001F27),
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        isAr ? 'Book Your Appointment' : 'Book Your Appointment',
+                        style: const TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF001F27),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.white.withOpacity(0.2)),
+                    ),
+                    child: const Center(
+                      child: Icon(
+                        Icons.calendar_month,
+                        color: Color(0xFF001F27),
+                        size: 26,
+                      ),
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  Icon(
-                    isAr ? Icons.arrow_back : Icons.arrow_forward,
-                    color: const Color(0xFF001F27),
-                    size: 16,
-                  )
                 ],
               ),
             ),
           ),
-          const SizedBox(height: 36),
+          const SizedBox(height: 28),
 
-          // Quick Statistics Grid
-          Row(
-            children: [
-              _buildStatItem('15+', isAr ? 'سنة خبرة' : 'Years Exp.'),
-              _buildStatItem('12k+', isAr ? 'حالة نجاح' : 'Smiles Crafted'),
-              _buildStatItem('99%', isAr ? 'رضا المرضى' : 'Satisfaction'),
-            ],
-          ),
-          const SizedBox(height: 40),
-
-          // Elegant Arabic Footer Brand
+          // 6. Elegant Brand Footer
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text('✦', style: TextStyle(color: Color(0xFF14D8FF))),
+              const Text('✦', style: TextStyle(color: Color(0xFF14D8FF), fontSize: 16)),
               const SizedBox(width: 8),
-              Text(
-                isAr ? 'نهتم بابتسامتك' : 'We care about your smile',
-                style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
+              Row(
+                children: [
+                  const Icon(Icons.shield_outlined, color: Color(0xFF14D8FF), size: 18),
+                  const SizedBox(width: 6),
+                  Text(
+                    isAr ? 'نهتم بابتسامتك' : 'We care about your smile',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(width: 8),
-              const Text('✦', style: TextStyle(color: Color(0xFF14D8FF))),
+              const Text('✦', style: TextStyle(color: Color(0xFF14D8FF), fontSize: 16)),
             ],
           ),
           const SizedBox(height: 4),
@@ -659,41 +872,114 @@ class HomeScreen extends StatelessWidget {
               fontSize: 10,
               color: Color(0xFF859398),
               letterSpacing: 2,
+              fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 24),
         ],
       ),
     );
   }
 
-  Widget _buildStatItem(String val, String label) {
-    return Expanded(
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 4),
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.02),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white.withOpacity(0.04)),
+  Widget _buildOrbitNode({
+    double? top,
+    double? left,
+    double? right,
+    double? bottom,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return Positioned(
+      top: top,
+      left: left,
+      right: right,
+      bottom: bottom,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          width: 52,
+          height: 52,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: const Color(0xFF09151C).withOpacity(0.85),
+            border: Border.all(color: const Color(0xFF14D8FF).withOpacity(0.55), width: 1.5),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF14D8FF).withOpacity(0.25),
+                blurRadius: 12,
+                spreadRadius: 1,
+              )
+            ],
+          ),
+          child: Center(
+            child: Icon(
+              icon,
+              color: const Color(0xFF14D8FF),
+              size: 24,
+            ),
+          ),
         ),
-        child: Column(
-          children: [
-            Text(
-              val,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w900,
-                color: Color(0xFF14D8FF),
+      ),
+    );
+  }
+
+  Widget _buildServiceCard({
+    required String arLabel,
+    required String enLabel,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 4),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                const Color(0xFF09151C).withOpacity(0.7),
+                const Color(0xFF03090C).withOpacity(0.9),
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(color: const Color(0xFF14D8FF).withOpacity(0.15), width: 1.2),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.4),
+                blurRadius: 10,
+                offset: const Offset(0, 6),
+              )
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, color: const Color(0xFF14D8FF), size: 36),
+              const SizedBox(height: 12),
+              Text(
+                arLabel,
+                style: const TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+                textAlign: TextAlign.center,
               ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: const TextStyle(fontSize: 10, color: Color(0xFF859398)),
-              textAlign: TextAlign.center,
-            ),
-          ],
+              const SizedBox(height: 4),
+              Text(
+                enLabel,
+                style: const TextStyle(
+                  fontSize: 8,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF859398),
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
       ),
     );
