@@ -15,15 +15,6 @@ void main() async {
 final supabase = Supabase.instance.client;
 
 Widget _buildProfileImage({required String imageUrl, required double size, double borderWidth = 2}) {
-  ImageProvider imageProvider;
-  if (imageUrl.startsWith('http')) {
-    imageProvider = NetworkImage(imageUrl);
-  } else if (imageUrl.isNotEmpty) {
-    imageProvider = AssetImage(imageUrl);
-  } else {
-    imageProvider = const AssetImage('src/assets/images/doctor_mustafa_uploaded.jpg');
-  }
-
   return Container(
     width: size,
     height: size,
@@ -39,14 +30,11 @@ Widget _buildProfileImage({required String imageUrl, required double size, doubl
       ],
     ),
     child: ClipOval(
-      child: Image(
-        image: imageProvider,
+      child: Image.asset(
+        'src/assets/images/doctor_mustafa_uploaded.jpg',
         fit: BoxFit.cover,
         errorBuilder: (context, error, stackTrace) {
-          return Image.asset(
-            'src/assets/images/doctor_mustafa_uploaded.jpg',
-            fit: BoxFit.cover,
-          );
+          return Container(color: Colors.black26);
         },
       ),
     ),
