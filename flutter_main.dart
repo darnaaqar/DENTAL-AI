@@ -21,7 +21,7 @@ Widget _buildProfileImage({required String imageUrl, required double size, doubl
   } else if (imageUrl.isNotEmpty) {
     imageProvider = AssetImage(imageUrl);
   } else {
-    imageProvider = const AssetImage('src/assets/images/doctor_mustafa_1783724318809.jpg');
+    imageProvider = const AssetImage('src/assets/images/doctor_mustafa_uploaded.jpg');
   }
 
   return Container(
@@ -44,7 +44,7 @@ Widget _buildProfileImage({required String imageUrl, required double size, doubl
         fit: BoxFit.cover,
         errorBuilder: (context, error, stackTrace) {
           return Image.asset(
-            'src/assets/images/doctor_mustafa_1783724318809.jpg',
+            'src/assets/images/doctor_mustafa_uploaded.jpg',
             fit: BoxFit.cover,
           );
         },
@@ -59,7 +59,7 @@ class DentalClinicApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Dr. Mustafa Al-Rifai',
+      title: 'Dr. Mustafa Al-Rifaie',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: Brightness.dark,
@@ -112,225 +112,34 @@ class _MainLayoutScreenState extends State<MainLayoutScreen> {
       _error = null;
     });
     try {
-      Map<String, dynamic>? settingsData;
-      try {
-        settingsData = await supabase.from('settings').select().maybeSingle();
-      } catch (e) {
-        debugPrint('Error fetching settings: $e');
-      }
+      final settingsData = await supabase.from('settings').select().maybeSingle();
+      final doctorsData = await supabase.from('doctors').select().order('created_at', ascending: true);
+      final servicesData = await supabase.from('services').select().eq('active', true).order('sort_order', ascending: true);
+      final galleryData = await supabase.from('gallery').select().order('created_at', ascending: false);
 
-      List<dynamic>? doctorsData;
-      try {
-        doctorsData = await supabase.from('doctors').select().order('created_at', ascending: true);
-      } catch (e) {
-        debugPrint('Error fetching doctors: $e');
-      }
-
-      List<dynamic>? servicesData;
-      try {
-        servicesData = await supabase.from('services').select().eq('active', true).order('sort_order', ascending: true);
-      } catch (e) {
-        debugPrint('Error fetching services: $e');
-      }
-
-      List<dynamic>? galleryData;
-      try {
-        galleryData = await supabase.from('gallery').select().order('created_at', ascending: false);
-      } catch (e) {
-        debugPrint('Error fetching gallery: $e');
+      if (settingsData == null || doctorsData == null || servicesData == null || galleryData == null) {
+        throw Exception("Could not retrieve all necessary data tables from Supabase. Please ensure tables are populated.");
       }
 
       setState(() {
-        _settings = settingsData ?? {
-          'clinic_name_ar': 'د. مصطفى الرفاعي',
-          'clinic_name_en': 'Dr. Mustafa Al-Rifai',
-          'slogan_ar': 'طب وتجميل الأسنان',
-          'slogan_en': 'Dental Care & Aesthetics',
-          'address_ar': 'جميرا، دبي، الإمارات',
-          'address_en': 'Jumeirah, Dubai, UAE',
-          'working_hours_ar': 'الأحد - الخميس: 09:00 ص - 08:00 م|الجمعة: 10:00 ص - 06:00 م|السبت: مغلق',
-          'working_hours_en': 'Sunday - Thursday: 09:00 AM - 08:00 PM|Friday: 10:00 AM - 06:00 PM|Saturday: Closed',
-          'phone': '+971 4 555 1234',
-          'whatsapp': '+971 50 987 6543',
-          'email': 'info@rifai-dental.com',
-          'website': 'https://rifai-dental.com',
-          'google_map': 'https://maps.google.com',
-          'logo_url': '',
-          'hero_image_url': 'src/assets/images/doctor_mustafa_1783724318809.jpg',
-          'facebook': 'https://facebook.com',
-          'instagram': 'https://instagram.com',
-          'tiktok': 'https://tiktok.com',
-          'youtube': 'https://youtube.com'
-        };
-
-        _doctors = doctorsData != null && doctorsData.isNotEmpty
-            ? List<Map<String, dynamic>>.from(doctorsData)
-            : [
-                {
-                  'id': 'mustafa-al-rifai',
-                  'full_name_ar': 'د. مصطفى الرفاعي',
-                  'full_name_en': 'Dr. Mustafa Al-Rifai',
-                  'title_ar': 'استشاري طب وتجميل الأسنان',
-                  'title_en': 'Consultant in Dental Care & Aesthetics',
-                  'about_ar': 'نؤمن بأن الابتسامة هي نافذة الروح، لذلك نسخر أحدث تقنيات الذكاء الاصطناعي والنمذجة ثلاثية الأبعاد لنمنح مرضانا أدق النتائج وأجمل المظاهر، مع ضمان تجربة علاجية فاخرة وخالية من الألم تماماً.',
-                  'about_en': 'We believe a smile is the window to the soul. Thus, we utilize cutting-edge AI and 3D modeling to deliver the most precise and stunning results, ensuring a completely premium, painless clinical experience.',
-                  'qualifications_ar': 'ماجستير في طب الأسنان التجميلي|عضو الجمعية الأمريكية لطب الأسنان|دورات متقدمة في زراعة وتجميل الأسنان',
-                  'qualifications_en': 'Master in Cosmetic Dentistry (International Academy of Cosmetic Dentistry)|Member of ADA (American Dental Association)|Advanced Dental Implant Specialist (Advanced Courses in Implants & Aesthetics)',
-                  'experience_years': 15,
-                  'image_url': 'src/assets/images/doctor_mustafa_1783724318809.jpg',
-                  'phone': '+971 4 555 1234',
-                  'email': 'info@rifai-dental.com',
-                  'whatsapp': '+971 50 987 6543',
-                  'facebook': 'https://facebook.com',
-                  'instagram': 'https://instagram.com'
-                }
-              ];
-
-        _services = servicesData != null && servicesData.isNotEmpty
-            ? List<Map<String, dynamic>>.from(servicesData)
-            : [
-                {
-                  'id': 'implants',
-                  'name_ar': 'زراعة الأسنان',
-                  'name_en': 'Dental Implants',
-                  'short_desc_ar': 'استعادة ابتسامتك الدائمة بأحدث تقنيات الزرع التيتانيوم الدقيق والتعويضات الفورية.',
-                  'short_desc_en': 'Restore your permanent smile using cutting-edge titanium implants and instant restorations.',
-                  'icon': 'implants',
-                  'image_url': 'https://lh3.googleusercontent.com/aida-public/AB6AXuBhtLCH5V1iI3UNnmz87HzHIcAqOvok_QMg_nxXVCaxQglBLUuV_FDyekcJG9j7T_dgsEZ7v9GVGD30tK90YwFN0IQxZTiby6eq7wlQVsYhYmgC0hlFB6YAU27cIoXqBc7OR9fDlXQP7ebskdzO2OLNUoIbOjKiDUZLwP7Kw25veXcWNJuirar5R47fahSvD_XG8fDMu_T8hg7iYumozUyi8122oJhs9QyFoQGQA4r21a0Td-eg79MTcaVeJMD-IHez2BDb9vmTLtc',
-                  'sort_order': 1,
-                  'active': true
-                },
-                {
-                  'id': 'veneers',
-                  'name_ar': 'فينير الأسنان',
-                  'name_en': 'Porcelain Veneers',
-                  'short_desc_ar': 'قشور خزفية فائقة الدقة لتغيير مظهر الأسنان والحصول على ابتسامة هوليوود المثالية.',
-                  'short_desc_en': 'Ultra-thin custom porcelain shells designed to cover the front surface of teeth for a Hollywood smile.',
-                  'icon': 'veneers',
-                  'image_url': 'https://lh3.googleusercontent.com/aida-public/AB6AXuBXPbsArznlWc7wjwK_KEpnD-ZD2Hz0PH9lYs-kdUg23s9csaR_aFxXxXafvaE2yjLQXqVMqLs7fSMaWHoXFJIikwrZFEpfNXlk18KzfAbgnDGjjHSvljxEja-o6kSZl9Yre8TbBxMc9kjGOoA3ZjkLGINoe0Vt6FF1lNNSh8Mu3egc6LtSN6SIMydmpTihz9GSJe5CNH10uJ2yX4mgqujmvE8ohYHHVoK2Na-aDfHkGcyG6mE7eUjqjbkMv0WNeaMeS97HDm__k6s',
-                  'sort_order': 2,
-                  'active': true
-                },
-                {
-                  'id': 'whitening',
-                  'name_ar': 'تبييض الأسنان',
-                  'name_en': 'Laser Teeth Whitening',
-                  'short_desc_ar': 'تفتيح احترافي باستخدام الليزر لإزالة التصبغات العميقة واستعادة إشراق ابتسامتك.',
-                  'short_desc_en': 'Safe, professional laser bleaching systems to eliminate deep-set stains and instantly brighten enamel.',
-                  'icon': 'whitening',
-                  'image_url': 'https://lh3.googleusercontent.com/aida-public/AB6AXuAi9-BHBZ4IqwyAd1uzPjXKCBxEjyoslolcDuhaLmAEFRolltwxKs0eop7Dh0igVbizUXHxD5dU6GqjHw9Tux5qjHXj3f4pU0Cv9J0QbTgGoanij-LVCQ15YlNAb0bmUvcwLPYAj-teiulmr7ybT5F0DHKWJP2xzHLWwc7sSbVysKWvsH1xeTztkb4XNTmZVpgf9HtoY8B5tiz3r4pF5g_R6SNTNQjbO-2OQUqihKqOBHtt4bY0-RV1Id7umWNwlUAbHpmfeQxwGVw',
-                  'sort_order': 3,
-                  'active': true
-                },
-                {
-                  'id': 'ortho',
-                  'name_ar': 'تقويم الأسنان',
-                  'name_en': 'Orthodontics & Aligners',
-                  'short_desc_ar': 'حلول تقويمية ذكية تشمل التقويم الشفاف والتقليدي لتصحيح اصطفاف الأسنان.',
-                  'short_desc_en': 'Comprehensive orthodontic correction including premium clear invisible aligners and Damon metal braces.',
-                  'icon': 'ortho',
-                  'image_url': 'https://lh3.googleusercontent.com/aida-public/AB6AXuCIgQybrBw0jdVNJ2TtHXLMeA1YXxaCPaqfDfnXZAOl2WDW6IHxebg5on9BOOjfcY6P5Qb8ERySp-p25DLvdBhmgknzTaqhvBtjlR2_0_CMie_SuHBQhYHflTV4sNaPnUVVrnmPvOgeO6BXkTrpKw9PYEVyQ1CO3wqKfdqZZnR5bqUOgXT2W6MVqxJMtRAGVGFNwh-497AHrUdc35ALEDADbCDPw8XO_ZBhk5gHVI5wJYL1Ob2mjg7OarEQRKNlSzE0AFRuHi0k9uU',
-                  'sort_order': 4,
-                  'active': true
-                }
-              ];
-
-        _gallery = galleryData != null && galleryData.isNotEmpty
-            ? List<Map<String, dynamic>>.from(galleryData)
-            : [
-                {
-                  'id': '1',
-                  'category': 'before_after',
-                  'title_ar': 'نتائج زراعة الأسنان الكاملة',
-                  'title_en': 'Full Arch Dental Reconstruction',
-                  'image_url': 'https://lh3.googleusercontent.com/aida-public/AB6AXuBbaBoAqhXNBgoh5ecdIqXvLXkLJD5eGXJgj6xkSvSDxhz2E7rNuUN70w2W4TXps1CxOYOJ7u-DSpdrweZayddj3fPxw1ij2sx5tuh1y5Fq5kKFdU-VwT-Wly8OA76B591UWCYJb90tblgOyoT9ZVqA8pOLwbW0DFR1jESGimIEqDT60M-mza4NAVk07KAJ9iB5-sW61_NmDfEiAPpgKFxei70YHJMGxDaFx3yONX-kj9TDxq3HVMUeFoTElJV64CHxFsMCNL9Mb8Q',
-                  'description_ar': 'حالة زراعة كاملة للفكين بنجاح رائع ومظهر طبيعي تماماً',
-                  'description_en': 'Full jaw implant success with stunning natural appearance'
-                },
-                {
-                  'id': '2',
-                  'category': 'clinic',
-                  'title_ar': 'البيئة العلاجية الفاخرة',
-                  'title_en': 'Premium Clinic Atmosphere',
-                  'image_url': 'https://lh3.googleusercontent.com/aida-public/AB6AXuDR54vqULR55DeThVM_mapE-KhydWzjigm1qrAr1SJ9jodmDvyrXiC67dcuUvqNuoIBrbuqMl5GVlFUQbtxoOLZOzRT7CQ6EGIeUqZrhtW_t4e8_rHiJC8N9mgduhn5asfCbRvuucxiZZ_Gl-R023ROCgpmeEyq5du_Mc14GPdoflWOCQiZi58Z9_i6N12k7vbgbLDOc7ir9o6XQoPfiWoZ-QKOJi3OhX3K6rVeh_BW_s0WDvKnTrnHdVboDCuo7kCPjwg6oStDByI',
-                  'description_ar': 'غرف علاجية حديثة ومجهزة بأحدث وسائل الراحة العالمية والتعقيم',
-                  'description_en': 'Modern surgical suites equipped with ultra-comfort amenities'
-                }
-              ];
+        _settings = settingsData;
+        _doctors = List<Map<String, dynamic>>.from(doctorsData);
+        _services = List<Map<String, dynamic>>.from(servicesData);
+        _gallery = List<Map<String, dynamic>>.from(galleryData);
         _isLoading = false;
       });
     } catch (e) {
       debugPrint('Error in _fetchSupabaseData: $e');
       setState(() {
         _isLoading = false;
-        _settings = {
-          'clinic_name_ar': 'د. مصطفى الرفاعي',
-          'clinic_name_en': 'Dr. Mustafa Al-Rifai',
-          'slogan_ar': 'طب وتجميل الأسنان',
-          'slogan_en': 'Dental Care & Aesthetics',
-          'address_ar': 'جميرا، دبي، الإمارات',
-          'address_en': 'Jumeirah, Dubai, UAE',
-          'working_hours_ar': 'الأحد - الخميس: 09:00 ص - 08:00 م|الجمعة: 10:00 ص - 06:00 م|السبت: مغلق',
-          'working_hours_en': 'Sunday - Thursday: 09:00 AM - 08:00 PM|Friday: 10:00 AM - 06:00 PM|Saturday: Closed',
-          'phone': '+971 4 555 1234',
-          'whatsapp': '+971 50 987 6543',
-          'email': 'info@rifai-dental.com',
-          'website': 'https://rifai-dental.com',
-          'google_map': 'https://maps.google.com',
-          'logo_url': '',
-          'hero_image_url': 'src/assets/images/doctor_mustafa_1783724318809.jpg',
-          'facebook': 'https://facebook.com',
-          'instagram': 'https://instagram.com',
-          'tiktok': 'https://tiktok.com',
-          'youtube': 'https://youtube.com'
-        };
-        _doctors = [
-          {
-            'id': 'mustafa-al-rifai',
-            'full_name_ar': 'د. مصطفى الرفاعي',
-            'full_name_en': 'Dr. Mustafa Al-Rifai',
-            'title_ar': 'استشاري طب وتجميل الأسنان',
-            'title_en': 'Consultant in Dental Care & Aesthetics',
-            'about_ar': 'نؤمن بأن الابتسامة هي نافذة الروح، لذلك نسخر أحدث تقنيات الذكاء الاصطناعي والنمذجة ثلاثية الأبعاد لنمنح مرضانا أدق النتائج وأجمل المظاهر، مع ضمان تجربة علاجية فاخرة وخالية من الألم تماماً.',
-            'about_en': 'We believe a smile is the window to the soul. Thus, we utilize cutting-edge AI and 3D modeling to deliver the most precise and stunning results, ensuring a completely premium, painless clinical experience.',
-            'qualifications_ar': 'ماجستير في طب الأسنان التجميلي|عضو الجمعية الأمريكية لطب الأسنان|دورات متقدمة في زراعة وتجميل الأسنان',
-            'qualifications_en': 'Master in Cosmetic Dentistry (International Academy of Cosmetic Dentistry)|Member of ADA (American Dental Association)|Advanced Dental Implant Specialist (Advanced Courses in Implants & Aesthetics)',
-            'experience_years': 15,
-            'image_url': 'src/assets/images/doctor_mustafa_1783724318809.jpg',
-            'phone': '+971 4 555 1234',
-            'email': 'info@rifai-dental.com',
-            'whatsapp': '+971 50 987 6543',
-            'facebook': 'https://facebook.com',
-            'instagram': 'https://instagram.com'
-          }
-        ];
-        _services = [
-          {
-            'id': 'implants',
-            'name_ar': 'زراعة الأسنان',
-            'name_en': 'Dental Implants',
-            'short_desc_ar': 'استعادة ابتسامتك الدائمة بأحدث تقنيات الزرع التيتانيوم الدقيق والتعويضات الفورية.',
-            'short_desc_en': 'Restore your permanent smile using cutting-edge titanium implants and instant restorations.',
-            'icon': 'implants',
-            'image_url': 'https://lh3.googleusercontent.com/aida-public/AB6AXuBhtLCH5V1iI3UNnmz87HzHIcAqOvok_QMg_nxXVCaxQglBLUuV_FDyekcJG9j7T_dgsEZ7v9GVGD30tK90YwFN0IQxZTiby6eq7wlQVsYhYmgC0hlFB6YAU27cIoXqBc7OR9fDlXQP7ebskdzO2OLNUoIbOjKiDUZLwP7Kw25veXcWNJuirar5R47fahSvD_XG8fDMu_T8hg7iYumozUyi8122oJhs9QyFoQGQA4r21a0Td-eg79MTcaVeJMD-IHez2BDb9vmTLtc',
-            'sort_order': 1,
-            'active': true
-          },
-          {
-            'id': 'veneers',
-            'name_ar': 'فينير الأسنان',
-            'name_en': 'Porcelain Veneers',
-            'short_desc_ar': 'قشور خزفية فائقة الدقة لتغيير مظهر الأسنان والحصول على ابتسامة هوليوود المثالية.',
-            'short_desc_en': 'Ultra-thin custom porcelain shells designed to cover the front surface of teeth for a Hollywood smile.',
-            'icon': 'veneers',
-            'image_url': 'https://lh3.googleusercontent.com/aida-public/AB6AXuBXPbsArznlWc7wjwK_KEpnD-ZD2Hz0PH9lYs-kdUg23s9csaR_aFxXxXafvaE2yjLQXqVMqLs7fSMaWHoXFJIikwrZFEpfNXlk18KzfAbgnDGjjHSvljxEja-o6kSZl9Yre8TbBxMc9kjGOoA3ZjkLGINoe0Vt6FF1lNNSh8Mu3egc6LtSN6SIMydmpTihz9GSJe5CNH10uJ2yX4mgqujmvE8ohYHHVoK2Na-aDfHkGcyG6mE7eUjqjbkMv0WNeaMeS97HDm__k6s',
-            'sort_order': 2,
-            'active': true
-          }
-        ];
+        _error = e.toString();
+        _settings = null;
+        _doctors = [];
+        _services = [];
         _gallery = [];
       });
     }
+  }
   }
 
   void _onNavigate(String tab) {
@@ -343,7 +152,7 @@ class _MainLayoutScreenState extends State<MainLayoutScreen> {
     final Map<String, Map<String, String>> translations = {
       'title': {
         'ar': _settings?['clinic_name_ar'] ?? 'د. مصطفى الرفاعي',
-        'en': _settings?['clinic_name_en'] ?? 'Dr. Mustafa Al-Rifai'
+        'en': _settings?['clinic_name_en'] ?? 'Dr. Mustafa Al-Rifaie'
       },
       'subtitle': {
         'ar': _settings?['slogan_ar'] ?? 'طب وتجميل الأسنان',
@@ -580,7 +389,7 @@ class _MainLayoutScreenState extends State<MainLayoutScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            isAr ? (doctor?['full_name_ar'] ?? 'د. مصطفى الرفاعي') : (doctor?['full_name_en'] ?? 'Dr. Mustafa Al-Rifai'),
+                            isAr ? (doctor?['full_name_ar'] ?? 'د. مصطفى الرفاعي') : (doctor?['full_name_en'] ?? 'Dr. Mustafa Al-Rifaie'),
                             style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.white),
                           ),
                           Text(
@@ -759,7 +568,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final name = isAr
         ? (settings?['clinic_name_ar'] ?? 'د. مصطفى الرفاعي')
-        : (settings?['clinic_name_en'] ?? 'Dr. Mustafa Al-Rifai');
+        : (settings?['clinic_name_en'] ?? 'Dr. Mustafa Al-Rifaie');
     final slogan = isAr
         ? (settings?['slogan_ar'] ?? 'طب وتجميل الأسنان')
         : (settings?['slogan_en'] ?? 'Dental Care & Aesthetics');
@@ -1663,32 +1472,10 @@ class _BookingScreenState extends State<BookingScreen> {
                             _activeBookingDetails = Map<String, dynamic>.from(res);
                           });
                         } catch (e) {
-                          final errStr = e.toString();
-                          if (errStr.contains('42501') || errStr.toLowerCase().contains('security policy')) {
-                            // Local-only fallback
-                            final dateStr = '${_selectedDate!.year}-${_selectedDate!.month.toString().padLeft(2, '0')}-${_selectedDate!.day.toString().padLeft(2, '0')}';
-                            final localId = 'local-rls-${DateTime.now().millisecondsSinceEpoch}';
-                            final mockRes = {
-                              'id': localId,
-                              'patient_name': _name,
-                              'phone': _phone,
-                              'service_id': _selectedServiceId,
-                              'preferred_language': widget.locale,
-                              'appointment_date': dateStr,
-                              'appointment_time': _selectedTime,
-                              'notes': _notes,
-                              'status': 'pending'
-                            };
-                            await _saveActiveBookingId(localId);
-                            setState(() {
-                              _isLoading = false;
-                              _booked = true;
-                              _activeBookingId = localId;
-                              _activeBookingDetails = mockRes;
-                            });
-                          } else {
-                            setState(() { _isLoading = false; _error = e.toString(); });
-                          }
+                          setState(() { 
+                            _isLoading = false; 
+                            _error = e.toString(); 
+                          });
                         }
                       }
                     },

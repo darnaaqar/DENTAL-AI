@@ -18,8 +18,8 @@ If you want to run this application on your local machine or an emulator:
 1. Install Flutter on your system (follow the official [Flutter installation guide](https://docs.flutter.dev/get-started/install)).
 2. Create a new Flutter project in a clean directory:
    ```bash
-   flutter create dental_clinic_app
-   cd dental_clinic_app
+   flutter create Dr_Mustafa
+   cd Dr_Mustafa
    ```
 3. Add the required dependencies to your `pubspec.yaml` file under `dependencies:`:
    ```yaml

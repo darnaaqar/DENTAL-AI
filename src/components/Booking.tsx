@@ -2,14 +2,16 @@ import {useState, useEffect, FormEvent} from 'react';
 import {motion} from 'motion/react';
 import {Phone, User, FileText, CheckCircle, Calendar as CalendarIcon, Clock, Stethoscope, RefreshCw, Trash2, Edit3, X, AlertTriangle} from 'lucide-react';
 import {createAppointment, updateAppointment, cancelAppointment, getAppointment} from '../supabaseClient';
+import doctorImage from '../assets/images/doctor_mustafa_uploaded.jpg';
 
 interface BookingProps {
   locale: 'ar' | 'en';
   doctor: any;
   services: any[];
+  preselectedServiceId?: string;
 }
 
-export default function Booking({locale, doctor, services}: BookingProps) {
+export default function Booking({locale, doctor, services, preselectedServiceId}: BookingProps) {
   const isAr = locale === 'ar';
   
   // Anti-spam states
@@ -25,10 +27,16 @@ export default function Booking({locale, doctor, services}: BookingProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [selectedDay, setSelectedDay] = useState(15);
   const [selectedSlot, setSelectedSlot] = useState('11:00 AM');
-  const [selectedServiceId, setSelectedServiceId] = useState(services[0]?.id || '');
+  const [selectedServiceId, setSelectedServiceId] = useState(preselectedServiceId || services[0]?.id || '');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [notes, setNotes] = useState('');
+
+  useEffect(() => {
+    if (preselectedServiceId) {
+      setSelectedServiceId(preselectedServiceId);
+    }
+  }, [preselectedServiceId]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
@@ -58,9 +66,13 @@ export default function Booking({locale, doctor, services}: BookingProps) {
           setSelectedSlot(fresh.appointment_time || '11:00 AM');
           setSelectedServiceId(fresh.service_id || services[0]?.id || '');
         } else {
-          // Cleared from remote, delete locally
-          localStorage.removeItem('rifai_active_booking');
-          setActiveBooking(null);
+          // Keep local storage copy if we cannot verify remote state,
+          // but prefill the edit states anyway based on local storage copy!
+          const dateParts = activeBooking.appointment_date.split('-');
+          const day = parseInt(dateParts[2] || '15', 10);
+          setSelectedDay(day);
+          setSelectedSlot(activeBooking.appointment_time || '11:00 AM');
+          setSelectedServiceId(activeBooking.service_id || services[0]?.id || '');
         }
       }).catch(err => {
         console.warn('Could not sync appointment with Supabase:', err);
@@ -423,7 +435,7 @@ export default function Booking({locale, doctor, services}: BookingProps) {
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-lg overflow-hidden border border-accent/20 shrink-0">
               <img 
-                src={doctor?.image_url || "/src/assets/images/doctor_mustafa_1783724318809.jpg"} 
+                src={doctor?.image_url && !doctor.image_url.includes('aida-public') ? doctor.image_url : doctorImage} 
                 className="w-full h-full object-cover"
                 alt="Doctor"
                 referrerPolicy="no-referrer"
@@ -431,7 +443,7 @@ export default function Booking({locale, doctor, services}: BookingProps) {
             </div>
             <div>
               <h3 className="font-bold text-[#dde4e6] text-sm">
-                {isAr ? (doctor?.full_name_ar || 'د. مصطفى الرفاعي') : (doctor?.full_name_en || 'Dr. Mustafa Al-Rifai')}
+                {isAr ? (doctor?.full_name_ar || 'د. مصطفى الرفاعي') : (doctor?.full_name_en || 'Dr. Mustafa Al-Rifaie')}
               </h3>
               <p className="text-xs text-[#859398]">
                 {isAr ? (doctor?.title_ar || 'استشاري طب وتجميل الأسنان') : (doctor?.title_en || 'Consultant in Dental Care & Aesthetics')}

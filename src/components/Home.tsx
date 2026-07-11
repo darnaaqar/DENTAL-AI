@@ -2,9 +2,10 @@ import {useState} from 'react';
 import {motion, AnimatePresence} from 'motion/react';
 import {X, ExternalLink, Globe, Shield, RefreshCw, MessageSquare, Phone, Calendar, MapPin} from 'lucide-react';
 import {Tab} from '../types';
+import doctorImage from '../assets/images/doctor_mustafa_uploaded.jpg';
 
 interface HomeProps {
-  onNavigate: (tab: Tab) => void;
+  onNavigate: (tab: Tab, serviceId?: string) => void;
   locale: 'ar' | 'en';
   settings?: any;
   doctor?: any;
@@ -55,7 +56,7 @@ export default function Home({onNavigate, locale, settings, doctor, services}: H
           {doctor?.full_name_ar || 'د. مصطفى الرفاعي'}
         </h1>
         <h2 className="text-xl font-bold text-[#14d8ff] drop-shadow-[0_0_12px_rgba(20,216,255,0.5)]">
-          {doctor?.full_name_en || 'Dr. Mustafa Al-Rifai'}
+          {doctor?.full_name_en || 'Dr. Mustafa Al-Rifaie'}
         </h2>
         
         {/* Symmetric subtitle rows with line dividers to match reference image */}
@@ -160,9 +161,9 @@ export default function Home({onNavigate, locale, settings, doctor, services}: H
           className="relative z-10 -mt-10"
         >
           <img 
-            src={doctor?.image_url || '/src/assets/images/doctor_mustafa_1783724318809.jpg'}
+            src={doctor?.image_url && !doctor.image_url.includes('aida-public') ? doctor.image_url : doctorImage}
             className="w-44 h-44 rounded-full border-4 border-[#14d8ff] shadow-[0_0_25px_rgba(20,216,255,0.7)] object-cover filter drop-shadow-[0_0_15px_rgba(20,216,255,0.6)]"
-            alt={isAr ? "د. مصطفى الرفاعي" : "Dr. Mustafa Al-Rifai"}
+            alt={isAr ? "د. مصطفى الرفاعي" : "Dr. Mustafa Al-Rifaie"}
             referrerPolicy="no-referrer"
           />
         </motion.div>
@@ -171,7 +172,7 @@ export default function Home({onNavigate, locale, settings, doctor, services}: H
         <div className="absolute inset-0 pointer-events-none z-25">
           {/* Node 1 (Heart Tooth): Top Left */}
           <motion.button
-            onClick={() => onNavigate('services')}
+            onClick={() => onNavigate('service-details', 'e18cb8f0-15cc-4cbe-b4db-996ff2505ea1')}
             animate={{y: [0, -6, 0]}}
             transition={{duration: 3.5, repeat: Infinity, delay: 0, ease: "easeInOut"}}
             className="absolute left-8 top-[16%] w-[60px] h-[60px] bg-[#09151c]/90 border border-[#14d8ff]/50 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(20,216,255,0.4)] pointer-events-auto cursor-pointer hover:scale-110 active:scale-95 transition-all duration-300"
@@ -184,7 +185,7 @@ export default function Home({onNavigate, locale, settings, doctor, services}: H
 
           {/* Node 2 (Dental Implant): Bottom Left */}
           <motion.button
-            onClick={() => onNavigate('services')}
+            onClick={() => onNavigate('service-details', 'e18cb8f0-15cc-4cbe-b4db-996ff2505ea3')}
             animate={{y: [0, 5, 0]}}
             transition={{duration: 4, repeat: Infinity, delay: 0.8, ease: "easeInOut"}}
             className="absolute left-4 bottom-[20%] w-[60px] h-[60px] bg-[#09151c]/90 border border-[#14d8ff]/50 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(20,216,255,0.4)] pointer-events-auto cursor-pointer hover:scale-110 active:scale-95 transition-all duration-300"
@@ -200,7 +201,7 @@ export default function Home({onNavigate, locale, settings, doctor, services}: H
 
           {/* Node 3 (Orthodontics Tooth): Top Right */}
           <motion.button
-            onClick={() => onNavigate('services')}
+            onClick={() => onNavigate('service-details', 'e18cb8f0-15cc-4cbe-b4db-996ff2505ea4')}
             animate={{y: [0, -5, 0]}}
             transition={{duration: 3.8, repeat: Infinity, delay: 1.5, ease: "easeInOut"}}
             className="absolute right-8 top-[16%] w-[60px] h-[60px] bg-[#09151c]/90 border border-[#14d8ff]/50 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(20,216,255,0.4)] pointer-events-auto cursor-pointer hover:scale-110 active:scale-95 transition-all duration-300"
@@ -217,7 +218,7 @@ export default function Home({onNavigate, locale, settings, doctor, services}: H
 
           {/* Node 4 (Sparkly Tooth): Bottom Right */}
           <motion.button
-            onClick={() => onNavigate('services')}
+            onClick={() => onNavigate('service-details', 'e18cb8f0-15cc-4cbe-b4db-996ff2505ea2')}
             animate={{y: [0, 6, 0]}}
             transition={{duration: 4.2, repeat: Infinity, delay: 2.2, ease: "easeInOut"}}
             className="absolute right-4 bottom-[20%] w-[60px] h-[60px] bg-[#09151c]/90 border border-[#14d8ff]/50 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(20,216,255,0.4)] pointer-events-auto cursor-pointer hover:scale-110 active:scale-95 transition-all duration-300"
@@ -249,7 +250,7 @@ export default function Home({onNavigate, locale, settings, doctor, services}: H
       <section className="grid grid-cols-4 gap-2.5">
         {[
           {
-            id: 'whitening',
+            id: 'e18cb8f0-15cc-4cbe-b4db-996ff2505ea1',
             labelAr: 'تبييض الأسنان',
             labelEn: 'Teeth Whitening',
             svg: (
@@ -261,7 +262,7 @@ export default function Home({onNavigate, locale, settings, doctor, services}: H
             )
           },
           {
-            id: 'veneers',
+            id: 'e18cb8f0-15cc-4cbe-b4db-996ff2505ea2',
             labelAr: 'الفينير',
             labelEn: 'Veneers',
             svg: (
@@ -273,7 +274,7 @@ export default function Home({onNavigate, locale, settings, doctor, services}: H
             )
           },
           {
-            id: 'implants',
+            id: 'e18cb8f0-15cc-4cbe-b4db-996ff2505ea3',
             labelAr: 'زراعة الأسنان',
             labelEn: 'Dental Implants',
             svg: (
@@ -285,7 +286,7 @@ export default function Home({onNavigate, locale, settings, doctor, services}: H
             )
           },
           {
-            id: 'ortho',
+            id: 'e18cb8f0-15cc-4cbe-b4db-996ff2505ea4',
             labelAr: 'تقويم الأسنان',
             labelEn: 'Orthodontics',
             svg: (
@@ -301,7 +302,7 @@ export default function Home({onNavigate, locale, settings, doctor, services}: H
         ].map((item) => (
           <button 
             key={item.id}
-            onClick={() => onNavigate('services')}
+            onClick={() => onNavigate('service-details', item.id)}
             className="flex flex-col items-center justify-center p-3.5 border border-[#14d8ff]/25 bg-gradient-to-b from-[#041d2d]/90 to-[#010e17]/95 rounded-[20px] shadow-[inset_0_1px_2px_rgba(20,216,255,0.15),0_6px_16px_rgba(0,0,0,0.7)] hover:border-[#14d8ff]/50 hover:scale-[1.03] active:scale-95 transition-all duration-300 cursor-pointer"
           >
             <div className="filter drop-shadow-[0_0_8px_rgba(20,216,255,0.35)]">{item.svg}</div>
@@ -483,7 +484,7 @@ export default function Home({onNavigate, locale, settings, doctor, services}: H
                         {isAr ? "بوابة الخدمات الرقمية" : "Digital Service Center"}
                       </span>
                       <h4 className="text-sm font-black text-white">
-                        {isAr ? "د. مصطفى الرفاعي" : "Dr. Mustafa Al-Rifai"}
+                        {isAr ? "د. مصطفى الرفاعي" : "Dr. Mustafa Al-Rifaie"}
                       </h4>
                       <p className="text-[11px] text-[#859398] mt-0.5">
                         {isAr ? "تكنولوجيا المستقبل لرعاية ابتسامتك" : "Future dentistry for your smile"}

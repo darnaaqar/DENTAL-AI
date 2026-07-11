@@ -5,9 +5,10 @@ import {Search, ArrowLeft, ArrowRight} from 'lucide-react';
 interface ServicesProps {
   locale: 'ar' | 'en';
   services: any[];
+  onNavigate: (tab: any, id: string) => void;
 }
 
-export default function Services({locale, services}: ServicesProps) {
+export default function Services({locale, services, onNavigate}: ServicesProps) {
   const isAr = locale === 'ar';
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -71,6 +72,7 @@ export default function Services({locale, services}: ServicesProps) {
             initial={{opacity: 0, y: 15}}
             animate={{opacity: 1, y: 0}}
             transition={{delay: index * 0.1}}
+            onClick={() => onNavigate('service-details', service.id)}
             className="glass-card p-5 rounded-[24px] relative overflow-hidden group hover:border-accent/30 transition-all cursor-pointer"
           >
             <div className="flex justify-between items-start mb-6">

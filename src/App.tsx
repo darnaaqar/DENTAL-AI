@@ -6,6 +6,7 @@ import About from './components/About';
 import Gallery from './components/Gallery';
 import Contact from './components/Contact';
 import Booking from './components/Booking';
+import ServiceDetails from './components/ServiceDetails';
 import { getSettings, getDoctors, getServices, getGallery, isSupabaseConfigured } from './supabaseClient';
 import {
   Menu,
@@ -26,6 +27,7 @@ import {
   Mail
 } from 'lucide-react';
 import {motion, AnimatePresence} from 'motion/react';
+import doctorImage from './assets/images/doctor_mustafa_uploaded.jpg';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<Tab>('home');
@@ -38,6 +40,19 @@ export default function App() {
   const [servicesList, setServicesList] = useState<any[]>([]);
   const [galleryList, setGalleryList] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
+  const [preselectedBookingServiceId, setPreselectedBookingServiceId] = useState<string | null>(null);
+
+  const handleNavigate = (tab: Tab, serviceId?: string) => {
+    if (tab === 'service-details' && serviceId) {
+      setSelectedServiceId(serviceId);
+    }
+    if (tab === 'booking') {
+      setPreselectedBookingServiceId(serviceId || null);
+    }
+    setActiveTab(tab);
+  };
 
   const isAr = locale === 'ar';
 
@@ -100,9 +115,19 @@ export default function App() {
     const activeDoctor = doctors[0] || null;
     switch (activeTab) {
       case 'home': 
-        return <Home onNavigate={setActiveTab} locale={locale} settings={settings} doctor={activeDoctor} services={servicesList} />;
+        return <Home onNavigate={handleNavigate} locale={locale} settings={settings} doctor={activeDoctor} services={servicesList} />;
       case 'services': 
-        return <Services locale={locale} services={servicesList} />;
+        return <Services locale={locale} services={servicesList} onNavigate={handleNavigate} />;
+      case 'service-details':
+        return (
+          <ServiceDetails 
+            serviceId={selectedServiceId} 
+            services={servicesList} 
+            locale={locale} 
+            onBack={() => handleNavigate('services')} 
+            onNavigate={handleNavigate} 
+          />
+        );
       case 'gallery': 
         return <Gallery locale={locale} gallery={galleryList} />;
       case 'about': 
@@ -110,9 +135,9 @@ export default function App() {
       case 'contact': 
         return <Contact locale={locale} settings={settings} />;
       case 'booking': 
-        return <Booking locale={locale} doctor={activeDoctor} services={servicesList} />;
+        return <Booking locale={locale} doctor={activeDoctor} services={servicesList} preselectedServiceId={preselectedBookingServiceId || undefined} />;
       default: 
-        return <Home onNavigate={setActiveTab} locale={locale} settings={settings} doctor={activeDoctor} services={servicesList} />;
+        return <Home onNavigate={handleNavigate} locale={locale} settings={settings} doctor={activeDoctor} services={servicesList} />;
     }
   };
 
@@ -135,10 +160,42 @@ export default function App() {
     );
   }
 
+  if (!settings || doctors.length === 0) {
+    return (
+      <div className="flex flex-col h-screen bg-[#000a12] text-[#dde4e6] font-sans items-center justify-center p-6 text-center space-y-6" dir={isAr ? 'rtl' : 'ltr'}>
+        <div className="p-4 rounded-full bg-red-500/10 border border-red-500/20 text-red-400">
+          <ShieldAlert className="w-12 h-12" />
+        </div>
+        <div className="space-y-2 max-w-md">
+          <h2 className="text-xl font-bold text-white">
+            {isAr ? 'خطأ في الاتصال بقاعدة البيانات' : 'Supabase Connection Error'}
+          </h2>
+          <p className="text-xs text-[#859398] leading-relaxed">
+            {isAr 
+              ? 'لم يتم العثور على بيانات العيادة في قاعدة بيانات Supabase. يرجى التأكد من ربط المشروع وإدخال السجلات المطلوبة في جداول (settings, doctors, services, gallery).'
+              : 'Could not retrieve clinic details from Supabase. Please ensure your Supabase integration is configured and the database tables (settings, doctors, services, gallery) are fully populated.'}
+          </p>
+        </div>
+        <button 
+          onClick={() => window.location.reload()}
+          className="px-6 py-2.5 rounded-full bg-gradient-to-r from-[#03d4ed] to-[#14d8ff] text-black font-extrabold text-xs shadow-[0_0_15px_rgba(20,216,255,0.3)] hover:brightness-110 active:scale-95 transition-all cursor-pointer"
+        >
+          {isAr ? 'إعادة المحاولة' : 'Retry Connection'}
+        </button>
+      </div>
+    );
+  }
+
 
   // Get dynamic header configuration based on active tab and language
   const getHeaderConfig = () => {
     switch (activeTab) {
+      case 'service-details':
+        return {
+          title: isAr ? 'تفاصيل الخدمة' : 'Service Dossier',
+          subtitle: isAr ? 'معلومات الإجراء الطبي' : 'Clinical procedure details',
+          showBack: true,
+        };
       case 'about':
         return {
           title: isAr ? 'عن الدكتور' : 'Doctor Profile',
@@ -171,7 +228,7 @@ export default function App() {
         };
       default:
         return {
-          title: isAr ? 'د. مصطفى الرفاعي' : 'Dr. Mustafa Al-Rifai',
+          title: isAr ? 'د. مصطفى الرفاعي' : 'Dr. Mustafa Al-Rifaie',
           subtitle: isAr ? 'طب وتجميل الأسنان' : 'Dental Care & Aesthetics',
           showBack: false,
         };
@@ -220,9 +277,15 @@ export default function App() {
           <div className="flex items-center gap-3">
             {headerConfig.showBack ? (
               <button 
-                onClick={() => setActiveTab('home')}
+                onClick={() => {
+                  if (activeTab === 'service-details') {
+                    handleNavigate('services');
+                  } else {
+                    handleNavigate('home');
+                  }
+                }}
                 className="flex items-center justify-center w-10 h-10 rounded-xl bg-white/5 border border-white/10 text-accent hover:bg-white/10 transition-all cursor-pointer active:scale-90"
-                title={isAr ? 'العودة للرئيسية' : 'Back to Home'}
+                title={isAr ? 'الرجوع' : 'Back'}
               >
                 {isAr ? <ChevronRight size={20} className="stroke-[2.5]" /> : <ChevronLeft size={20} className="stroke-[2.5]" />}
               </button>
@@ -318,14 +381,14 @@ export default function App() {
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full border border-accent/40 overflow-hidden">
                       <img 
-                        src={doctors[0]?.image_url || "https://lh3.googleusercontent.com/aida-public/AB6AXuBQGk9T8T-E-dTpTss5FQxeaLgfuT6D7b8knwLxoma7ZhneQUbTV6jegwf83Rz3Wsi-1ojfZUr4lObSfdbX8qJs_GRO-1BDl9AUgNUb0Z60o8xRS9X-FtvMzMNib-qoykcBsefefS1Hhaf0u5mEuLb83liLjH7sos8ZJOA7njPRorV-taMls7PyH_FyRFsPwcu0h8c2UUGlTi9rSDRoelBrHe30tc3qJpL7eQi6euwC_Dofi6FIaIkTEyIqa6zWRKrNA2ZqGbxXlPo"} 
+                        src={doctors[0]?.image_url && !doctors[0].image_url.includes('aida-public') ? doctors[0].image_url : doctorImage} 
                         className="w-full h-full object-cover" 
                         alt="Dr. Mustafa Portrait" 
                       />
                     </div>
                     <div>
                       <h4 className="font-extrabold text-sm text-[#dde4e6]">
-                        {isAr ? (doctors[0]?.full_name_ar || 'د. مصطفى الرفاعي') : (doctors[0]?.full_name_en || 'Dr. Mustafa Al-Rifai')}
+                        {isAr ? (doctors[0]?.full_name_ar || 'د. مصطفى الرفاعي') : (doctors[0]?.full_name_en || 'Dr. Mustafa Al-Rifaie')}
                       </h4>
                       <p className="text-[10px] text-accent font-semibold uppercase tracking-wider">
                         {isAr ? (doctors[0]?.title_ar || 'استشاري تجميل الأسنان') : (doctors[0]?.title_en || 'Dental aesthetics')}
@@ -367,7 +430,7 @@ export default function App() {
                         <button
                           key={item.id}
                           onClick={() => {
-                            setActiveTab(item.id);
+                            handleNavigate(item.id);
                             setIsDrawerOpen(false);
                           }}
                           className={`flex items-center gap-3 px-4 py-3 rounded-xl border text-xs font-bold transition-all duration-300 cursor-pointer ${

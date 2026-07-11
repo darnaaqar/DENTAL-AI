@@ -1,5 +1,6 @@
 import {motion} from 'motion/react';
 import {GraduationCap, Briefcase, Microscope, Calendar} from 'lucide-react';
+import doctorImage from '../assets/images/doctor_mustafa_uploaded.jpg';
 
 interface AboutProps {
   locale: 'ar' | 'en';
@@ -52,7 +53,7 @@ export default function About({locale, doctor}: AboutProps) {
           <div className="absolute -inset-1 bg-accent/20 rounded-full blur-xl animate-pulse"></div>
           <div className="relative w-40 h-40 rounded-full border-2 border-accent/50 p-1.5 overflow-hidden shadow-[0_0_30px_rgba(20,216,255,0.3)]">
             <img 
-              src={doctor?.image_url || "/src/assets/images/doctor_mustafa_1783724318809.jpg"} 
+              src={doctor?.image_url && !doctor.image_url.includes('aida-public') ? doctor.image_url : doctorImage} 
               className="w-full h-full rounded-full object-cover"
               alt="Dr. Mustafa"
               referrerPolicy="no-referrer"
@@ -61,7 +62,7 @@ export default function About({locale, doctor}: AboutProps) {
         </div>
         <div className="space-y-1">
           <h2 className="text-2xl font-bold text-accent neon-glow">
-            {isAr ? (doctor?.full_name_ar || 'د. مصطفى الرفاعي') : (doctor?.full_name_en || 'Dr. Mustafa Al-Rifai')}
+            {isAr ? (doctor?.full_name_ar || 'د. مصطفى الرفاعي') : (doctor?.full_name_en || 'Dr. Mustafa Al-Rifaie')}
           </h2>
           <p className="text-[#bbc9ce] opacity-80 text-sm">
             {isAr ? (doctor?.title_ar || 'استشاري طب وتجميل الأسنان') : (doctor?.title_en || 'Consultant in Dental Care & Aesthetics')}
