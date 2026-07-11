@@ -435,7 +435,7 @@ export default function Booking({locale, doctor, services, preselectedServiceId}
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-lg overflow-hidden border border-accent/20 shrink-0">
               <img 
-                src={doctor?.image_url && !doctor.image_url.includes('aida-public') ? doctor.image_url : doctorImage} 
+                src={doctorImage} 
                 className="w-full h-full object-cover"
                 alt="Doctor"
                 referrerPolicy="no-referrer"

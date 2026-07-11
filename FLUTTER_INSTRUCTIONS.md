@@ -60,7 +60,7 @@ To compile your APK automatically using GitHub's secure cloud servers:
    ```
 3. Once pushed, navigate to the **Actions** tab on your GitHub repository page.
 4. You will see the **"Build & Release Android APK"** workflow running automatically!
-5. When the build completes successfully, click on the workflow run, scroll down to the **Artifacts** section, and download your **`dental-clinic-release-apks`**!
+5. When the build completes successfully, click on the workflow run, scroll down to the **Artifacts** section, and download your **`dr-mudtafa-alrifaie-release-apks`**!
 
    Within the downloaded ZIP, you will find:
    - **`app-release.apk`**: A single "universal" release APK (typically ~12-15MB) containing native code for all CPU architectures.

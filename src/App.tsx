@@ -381,7 +381,7 @@ export default function App() {
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full border border-accent/40 overflow-hidden">
                       <img 
-                        src={doctors[0]?.image_url && !doctors[0].image_url.includes('aida-public') ? doctors[0].image_url : doctorImage} 
+                        src={doctorImage} 
                         className="w-full h-full object-cover" 
                         alt="Dr. Mustafa Portrait" 
                       />

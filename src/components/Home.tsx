@@ -161,7 +161,7 @@ export default function Home({onNavigate, locale, settings, doctor, services}: H
           className="relative z-10 -mt-10"
         >
           <img 
-            src={doctor?.image_url && !doctor.image_url.includes('aida-public') ? doctor.image_url : doctorImage}
+            src={doctorImage}
             className="w-44 h-44 rounded-full border-4 border-[#14d8ff] shadow-[0_0_25px_rgba(20,216,255,0.7)] object-cover filter drop-shadow-[0_0_15px_rgba(20,216,255,0.6)]"
             alt={isAr ? "د. مصطفى الرفاعي" : "Dr. Mustafa Al-Rifaie"}
             referrerPolicy="no-referrer"

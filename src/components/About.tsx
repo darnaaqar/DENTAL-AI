@@ -53,7 +53,7 @@ export default function About({locale, doctor}: AboutProps) {
           <div className="absolute -inset-1 bg-accent/20 rounded-full blur-xl animate-pulse"></div>
           <div className="relative w-40 h-40 rounded-full border-2 border-accent/50 p-1.5 overflow-hidden shadow-[0_0_30px_rgba(20,216,255,0.3)]">
             <img 
-              src={doctor?.image_url && !doctor.image_url.includes('aida-public') ? doctor.image_url : doctorImage} 
+              src={doctorImage} 
               className="w-full h-full rounded-full object-cover"
               alt="Dr. Mustafa"
               referrerPolicy="no-referrer"
