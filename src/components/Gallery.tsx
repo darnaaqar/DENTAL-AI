@@ -13,16 +13,17 @@ export default function Gallery({locale, gallery}: GalleryProps) {
 
   const categories = [
     {id: 'all', label: isAr ? 'الكل' : 'All'},
+    {id: 'before_after', label: isAr ? 'قبل وبعد' : 'Before & After'},
     {id: 'clinic', label: isAr ? 'العيادة' : 'Clinic'},
-    {id: 'patients', label: isAr ? 'الحالات' : 'Cases'},
-    {id: 'tech', label: isAr ? 'التقنيات' : 'Technology'},
+    {id: 'technology', label: isAr ? 'التقنيات' : 'Technology'},
+    {id: 'team', label: isAr ? 'الفريق' : 'Team'},
   ];
 
   const mappedItems = gallery.map((item, index) => ({
     id: item.id || String(index + 1),
     title: isAr ? (item.title_ar || '') : (item.title_en || ''),
     category: item.category || 'clinic',
-    large: index === 0 || item.category === 'patients',
+    large: index === 0 || item.category === 'before_after',
     src: item.image_url
   }));
 

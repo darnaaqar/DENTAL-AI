@@ -2,7 +2,7 @@ import {useState, useEffect, FormEvent} from 'react';
 import {motion} from 'motion/react';
 import {Phone, User, FileText, CheckCircle, Calendar as CalendarIcon, Clock, Stethoscope, RefreshCw, Trash2, Edit3, X, AlertTriangle} from 'lucide-react';
 import {createAppointment, updateAppointment, cancelAppointment, getAppointment} from '../supabaseClient';
-import doctorImage from '../assets/images/doctor_mustafa_uploaded.jpg';
+import doctorImage from '../assets/images/doctor_mustafa_uploaded.png';
 
 interface BookingProps {
   locale: 'ar' | 'en';

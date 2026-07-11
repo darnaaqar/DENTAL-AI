@@ -27,7 +27,7 @@ import {
   Mail
 } from 'lucide-react';
 import {motion, AnimatePresence} from 'motion/react';
-import doctorImage from './assets/images/doctor_mustafa_uploaded.jpg';
+import doctorImage from './assets/images/doctor_mustafa_uploaded.png';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<Tab>('home');

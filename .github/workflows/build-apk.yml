@@ -29,7 +29,7 @@ jobs:
 
       - name: Create Flutter App Shell
         run: |
-          flutter create --org com.example.dentalclinic --project-name dr_mudtafa_alrifaie flutter_project
+          flutter create --org com.example.dentalclinic --project-name mustafa_alrifaie flutter_project
 
       - name: Copy Custom Flutter Code
         run: |
@@ -74,5 +74,5 @@ jobs:
       - name: Upload APK Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: dr-mudtafa-alrifaie-release-apks
+          name: mustafa-alrifaie-release-apks
           path: flutter_project/build/app/outputs/flutter-apk/*.apk

@@ -31,7 +31,7 @@ Widget _buildProfileImage({required String imageUrl, required double size, doubl
     ),
     child: ClipOval(
       child: Image.asset(
-        'src/assets/images/doctor_mustafa_uploaded.jpg',
+        'src/assets/images/doctor_mustafa_uploaded.png',
         fit: BoxFit.cover,
         errorBuilder: (context, error, stackTrace) {
           return Container(color: Colors.black26);

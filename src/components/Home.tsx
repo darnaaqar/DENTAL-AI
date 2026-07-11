@@ -2,7 +2,7 @@ import {useState} from 'react';
 import {motion, AnimatePresence} from 'motion/react';
 import {X, ExternalLink, Globe, Shield, RefreshCw, MessageSquare, Phone, Calendar, MapPin} from 'lucide-react';
 import {Tab} from '../types';
-import doctorImage from '../assets/images/doctor_mustafa_uploaded.jpg';
+import doctorImage from '../assets/images/doctor_mustafa_uploaded.png';
 
 interface HomeProps {
   onNavigate: (tab: Tab, serviceId?: string) => void;
@@ -15,6 +15,16 @@ interface HomeProps {
 export default function Home({onNavigate, locale, settings, doctor, services}: HomeProps) {
   const isAr = locale === 'ar';
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+  // Helper to find service ID by keyword / icon in case Supabase has different UUIDs
+  const findServiceId = (keywordEn: string, fallbackId: string) => {
+    if (!services || services.length === 0) return fallbackId;
+    const found = services.find(s => 
+      s.name_en?.toLowerCase().includes(keywordEn.toLowerCase()) ||
+      s.icon?.toLowerCase().includes(keywordEn.toLowerCase())
+    );
+    return found ? found.id : fallbackId;
+  };
 
 
   return (
@@ -172,7 +182,7 @@ export default function Home({onNavigate, locale, settings, doctor, services}: H
         <div className="absolute inset-0 pointer-events-none z-25">
           {/* Node 1 (Heart Tooth): Top Left */}
           <motion.button
-            onClick={() => onNavigate('service-details', 'e18cb8f0-15cc-4cbe-b4db-996ff2505ea1')}
+            onClick={() => onNavigate('service-details', findServiceId('white', 'e18cb8f0-15cc-4cbe-b4db-996ff2505ea1'))}
             animate={{y: [0, -6, 0]}}
             transition={{duration: 3.5, repeat: Infinity, delay: 0, ease: "easeInOut"}}
             className="absolute left-8 top-[16%] w-[60px] h-[60px] bg-[#09151c]/90 border border-[#14d8ff]/50 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(20,216,255,0.4)] pointer-events-auto cursor-pointer hover:scale-110 active:scale-95 transition-all duration-300"
@@ -185,7 +195,7 @@ export default function Home({onNavigate, locale, settings, doctor, services}: H
 
           {/* Node 2 (Dental Implant): Bottom Left */}
           <motion.button
-            onClick={() => onNavigate('service-details', 'e18cb8f0-15cc-4cbe-b4db-996ff2505ea3')}
+            onClick={() => onNavigate('service-details', findServiceId('implant', 'e18cb8f0-15cc-4cbe-b4db-996ff2505ea3'))}
             animate={{y: [0, 5, 0]}}
             transition={{duration: 4, repeat: Infinity, delay: 0.8, ease: "easeInOut"}}
             className="absolute left-4 bottom-[20%] w-[60px] h-[60px] bg-[#09151c]/90 border border-[#14d8ff]/50 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(20,216,255,0.4)] pointer-events-auto cursor-pointer hover:scale-110 active:scale-95 transition-all duration-300"
@@ -201,7 +211,7 @@ export default function Home({onNavigate, locale, settings, doctor, services}: H
 
           {/* Node 3 (Orthodontics Tooth): Top Right */}
           <motion.button
-            onClick={() => onNavigate('service-details', 'e18cb8f0-15cc-4cbe-b4db-996ff2505ea4')}
+            onClick={() => onNavigate('service-details', findServiceId('aligner', 'e18cb8f0-15cc-4cbe-b4db-996ff2505ea4'))}
             animate={{y: [0, -5, 0]}}
             transition={{duration: 3.8, repeat: Infinity, delay: 1.5, ease: "easeInOut"}}
             className="absolute right-8 top-[16%] w-[60px] h-[60px] bg-[#09151c]/90 border border-[#14d8ff]/50 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(20,216,255,0.4)] pointer-events-auto cursor-pointer hover:scale-110 active:scale-95 transition-all duration-300"
@@ -218,7 +228,7 @@ export default function Home({onNavigate, locale, settings, doctor, services}: H
 
           {/* Node 4 (Sparkly Tooth): Bottom Right */}
           <motion.button
-            onClick={() => onNavigate('service-details', 'e18cb8f0-15cc-4cbe-b4db-996ff2505ea2')}
+            onClick={() => onNavigate('service-details', findServiceId('veneer', 'e18cb8f0-15cc-4cbe-b4db-996ff2505ea2'))}
             animate={{y: [0, 6, 0]}}
             transition={{duration: 4.2, repeat: Infinity, delay: 2.2, ease: "easeInOut"}}
             className="absolute right-4 bottom-[20%] w-[60px] h-[60px] bg-[#09151c]/90 border border-[#14d8ff]/50 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(20,216,255,0.4)] pointer-events-auto cursor-pointer hover:scale-110 active:scale-95 transition-all duration-300"
@@ -250,7 +260,7 @@ export default function Home({onNavigate, locale, settings, doctor, services}: H
       <section className="grid grid-cols-4 gap-2.5">
         {[
           {
-            id: 'e18cb8f0-15cc-4cbe-b4db-996ff2505ea1',
+            id: findServiceId('white', 'e18cb8f0-15cc-4cbe-b4db-996ff2505ea1'),
             labelAr: 'تبييض الأسنان',
             labelEn: 'Teeth Whitening',
             svg: (
@@ -262,7 +272,7 @@ export default function Home({onNavigate, locale, settings, doctor, services}: H
             )
           },
           {
-            id: 'e18cb8f0-15cc-4cbe-b4db-996ff2505ea2',
+            id: findServiceId('veneer', 'e18cb8f0-15cc-4cbe-b4db-996ff2505ea2'),
             labelAr: 'الفينير',
             labelEn: 'Veneers',
             svg: (
@@ -274,7 +284,7 @@ export default function Home({onNavigate, locale, settings, doctor, services}: H
             )
           },
           {
-            id: 'e18cb8f0-15cc-4cbe-b4db-996ff2505ea3',
+            id: findServiceId('implant', 'e18cb8f0-15cc-4cbe-b4db-996ff2505ea3'),
             labelAr: 'زراعة الأسنان',
             labelEn: 'Dental Implants',
             svg: (
@@ -286,7 +296,7 @@ export default function Home({onNavigate, locale, settings, doctor, services}: H
             )
           },
           {
-            id: 'e18cb8f0-15cc-4cbe-b4db-996ff2505ea4',
+            id: findServiceId('aligner', 'e18cb8f0-15cc-4cbe-b4db-996ff2505ea4'),
             labelAr: 'تقويم الأسنان',
             labelEn: 'Orthodontics',
             svg: (

@@ -1,6 +1,6 @@
 import {motion} from 'motion/react';
 import {GraduationCap, Briefcase, Microscope, Calendar} from 'lucide-react';
-import doctorImage from '../assets/images/doctor_mustafa_uploaded.jpg';
+import doctorImage from '../assets/images/doctor_mustafa_uploaded.png';
 
 interface AboutProps {
   locale: 'ar' | 'en';
