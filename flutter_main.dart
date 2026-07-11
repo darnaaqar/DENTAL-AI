@@ -140,7 +140,6 @@ class _MainLayoutScreenState extends State<MainLayoutScreen> {
       });
     }
   }
-  }
 
   void _onNavigate(String tab) {
     setState(() {
