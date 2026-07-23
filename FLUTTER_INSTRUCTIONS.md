@@ -26,9 +26,11 @@ If you want to run this application on your local machine or an emulator:
    dependencies:
      flutter:
        sdk: flutter
-     lucide_icons: ^0.1.2 # To match our high-quality Lucide Icons design
-     google_fonts: ^6.2.0 # For our elegant "Space Grotesk" and "Inter" fonts
      url_launcher: ^6.3.0 # For the phone, WhatsApp, and Google Maps click events
+     supabase_flutter: ^2.6.0 # Supabase backend client
+     shared_preferences: ^2.2.3 # Local storage settings
+     hive: ^2.2.3 # Lightweight Hive NoSQL database for fast local caching
+     hive_flutter: ^1.1.0 # Hive integration for Flutter
    ```
 4. Run `flutter pub get` in your terminal to fetch the dependencies.
 5. Replace the contents of your `lib/main.dart` file with the complete code from the `flutter_main.dart` file in this workspace.

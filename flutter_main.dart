@@ -2,9 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+  await Hive.openBox('settingsBox');
+  await Hive.openBox('doctorsBox');
+  await Hive.openBox('servicesBox');
+  await Hive.openBox('galleryBox');
+
   await Supabase.initialize(
     url: 'https://dkofobocffyzlpmqrrwo.supabase.co',
     anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRrb2ZvYm9jZmZ5emxwbXFycndvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4NDY0NTIsImV4cCI6MjA5NjQyMjQ1Mn0.JmQWvPhsMjobIAWM1EuRtHOsomBJ8U5FiY20ml8dRSo',
@@ -13,6 +20,56 @@ void main() async {
 }
 
 final supabase = Supabase.instance.client;
+
+Widget buildSlowDownloadImage({
+  required String url,
+  double? width,
+  double? height,
+  BoxFit fit = BoxFit.cover,
+}) {
+  if (url.isEmpty) {
+    return Container(color: const Color(0xFF161D1F));
+  }
+  return Image.network(
+    url,
+    width: width,
+    height: height,
+    fit: fit,
+    frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+      if (wasSynchronouslyLoaded) {
+        return child;
+      }
+      return AnimatedOpacity(
+        opacity: frame != null ? 1.0 : 0.0,
+        duration: const Duration(milliseconds: 700),
+        curve: Curves.easeOut,
+        child: frame != null
+            ? child
+            : Container(
+                width: width,
+                height: height,
+                color: const Color(0xFF161D1F),
+                child: const Center(
+                  child: SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Color(0xFF14D8FF),
+                    ),
+                  ),
+                ),
+              ),
+      );
+    },
+    errorBuilder: (context, error, stackTrace) => Container(
+      width: width,
+      height: height,
+      color: const Color(0xFF161D1F),
+      child: const Icon(Icons.image_not_supported_outlined, color: Colors.white24, size: 24),
+    ),
+  );
+}
 
 Widget _buildProfileImage({required String imageUrl, required double size, double borderWidth = 2}) {
   return Container(
@@ -95,37 +152,67 @@ class _MainLayoutScreenState extends State<MainLayoutScreen> {
   }
 
   Future<void> _fetchSupabaseData() async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
+    final settingsBox = Hive.box('settingsBox');
+    final doctorsBox = Hive.box('doctorsBox');
+    final servicesBox = Hive.box('servicesBox');
+    final galleryBox = Hive.box('galleryBox');
+
+    final cachedSettings = settingsBox.get('data');
+    final cachedDoctors = doctorsBox.get('list');
+    final cachedServices = servicesBox.get('list');
+    final cachedGallery = galleryBox.get('list');
+
+    if (cachedSettings != null && cachedDoctors != null && cachedServices != null && cachedGallery != null) {
+      setState(() {
+        _settings = Map<String, dynamic>.from(cachedSettings);
+        _doctors = List<Map<String, dynamic>>.from((cachedDoctors as List).map((e) => Map<String, dynamic>.from(e)));
+        _services = List<Map<String, dynamic>>.from((cachedServices as List).map((e) => Map<String, dynamic>.from(e)));
+        _gallery = List<Map<String, dynamic>>.from((cachedGallery as List).map((e) => Map<String, dynamic>.from(e)));
+        _isLoading = false;
+        _error = null;
+      });
+    } else {
+      setState(() {
+        _isLoading = true;
+        _error = null;
+      });
+    }
+
     try {
       final settingsData = await supabase.from('settings').select().maybeSingle();
       final doctorsData = await supabase.from('doctors').select().order('created_at', ascending: true);
       final servicesData = await supabase.from('services').select().eq('active', true).order('sort_order', ascending: true);
       final galleryData = await supabase.from('gallery').select().order('created_at', ascending: false);
 
-      if (settingsData == null || doctorsData == null || servicesData == null || galleryData == null) {
-        throw Exception("Could not retrieve all necessary data tables from Supabase. Please ensure tables are populated.");
+      if (settingsData != null) {
+        await settingsBox.put('data', Map<String, dynamic>.from(settingsData));
+      }
+      if (doctorsData != null) {
+        await doctorsBox.put('list', doctorsData);
+      }
+      if (servicesData != null) {
+        await servicesBox.put('list', servicesData);
+      }
+      if (galleryData != null) {
+        await galleryBox.put('list', galleryData);
       }
 
       setState(() {
         _settings = settingsData;
-        _doctors = List<Map<String, dynamic>>.from(doctorsData);
-        _services = List<Map<String, dynamic>>.from(servicesData);
-        _gallery = List<Map<String, dynamic>>.from(galleryData);
+        _doctors = List<Map<String, dynamic>>.from(doctorsData ?? []);
+        _services = List<Map<String, dynamic>>.from(servicesData ?? []);
+        _gallery = List<Map<String, dynamic>>.from(galleryData ?? []);
         _isLoading = false;
+        _error = null;
       });
     } catch (e) {
       debugPrint('Error in _fetchSupabaseData: $e');
-      setState(() {
-        _isLoading = false;
-        _error = e.toString();
-        _settings = null;
-        _doctors = [];
-        _services = [];
-        _gallery = [];
-      });
+      if (_settings == null) {
+        setState(() {
+          _isLoading = false;
+          _error = e.toString();
+        });
+      }
     }
   }
 

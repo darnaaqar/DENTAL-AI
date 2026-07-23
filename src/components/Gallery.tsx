@@ -1,13 +1,17 @@
 import {motion} from 'motion/react';
 import {useState} from 'react';
-import {Camera} from 'lucide-react';
+import {Camera, Calendar, ArrowUpRight} from 'lucide-react';
+import {Tab} from '../types';
+
+import SlowDownloadImage from './SlowDownloadImage';
 
 interface GalleryProps {
   locale: 'ar' | 'en';
   gallery: any[];
+  onNavigate?: (tab: Tab, serviceId?: string) => void;
 }
 
-export default function Gallery({locale, gallery}: GalleryProps) {
+export default function Gallery({locale, gallery, onNavigate}: GalleryProps) {
   const isAr = locale === 'ar';
   const [filter, setFilter] = useState('all');
 
@@ -21,6 +25,7 @@ export default function Gallery({locale, gallery}: GalleryProps) {
 
   const mappedItems = gallery.map((item, index) => ({
     id: item.id || String(index + 1),
+    serviceId: item.service_id,
     title: isAr ? (item.title_ar || '') : (item.title_en || ''),
     category: item.category || 'clinic',
     large: index === 0 || item.category === 'before_after',
@@ -64,15 +69,36 @@ export default function Gallery({locale, gallery}: GalleryProps) {
             key={item.id}
             initial={{opacity: 0, scale: 0.95}}
             animate={{opacity: 1, scale: 1}}
-            className={`glass-card rounded-2xl overflow-hidden group cursor-pointer ${item.large ? 'col-span-2' : ''}`}
+            className={`glass-card rounded-2xl overflow-hidden group relative cursor-pointer ${item.large ? 'col-span-2' : ''}`}
           >
             <div className={`relative ${item.large ? 'aspect-video' : 'aspect-square'}`}>
-              <img 
+              <SlowDownloadImage 
                 src={item.src} 
+                alt={item.title}
+                containerClassName="w-full h-full"
                 className="w-full h-full object-cover filter brightness-90 contrast-110 saturate-100 group-hover:scale-105 transition-transform duration-700" 
-                alt={item.title} 
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0e1417]/90 via-[#0e1417]/25 to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0e1417]/95 via-[#0e1417]/30 to-transparent"></div>
+              
+              {/* Action Link button */}
+              {onNavigate && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (item.serviceId) {
+                      onNavigate('service-details', item.serviceId);
+                    } else {
+                      onNavigate('booking');
+                    }
+                  }}
+                  className="absolute top-3 right-3 bg-[#08151c]/80 border border-accent/40 backdrop-blur-md px-2.5 py-1 rounded-full text-[9px] font-bold text-accent flex items-center gap-1 hover:bg-accent hover:text-[#001f27] transition-all cursor-pointer shadow-lg opacity-90 group-hover:opacity-100"
+                >
+                  <Calendar size={10} />
+                  <span>{isAr ? 'احجز نتيجة مماثلة' : 'Book Similar Case'}</span>
+                  <ArrowUpRight size={10} />
+                </button>
+              )}
+
               <div className={`absolute bottom-3 left-3 right-3 flex justify-between items-end ${isAr ? 'flex-row' : 'flex-row-reverse'}`}>
                 {item.large && <Camera className="text-accent shrink-0 animate-pulse" size={14} />}
                 <h3 className={`text-xs font-bold text-white leading-tight ${isAr ? 'text-right' : 'text-left'}`}>

@@ -191,14 +191,24 @@ export default function ServiceDetails({
             </div>
           )}
 
-          {/* CTA Book Now */}
-          <button
-            onClick={() => onNavigate('booking', service.id)}
-            className="w-full bg-gradient-to-r from-[#03d4ed] to-[#14d8ff] h-14 rounded-2xl flex items-center justify-center gap-2 text-[#001f27] font-black hover:shadow-[0_0_25px_rgba(20,216,255,0.4)] active:scale-[0.99] transition-all cursor-pointer shadow-lg"
-          >
-            <Calendar size={18} />
-            <span>{isAr ? 'احجز موعداً لهذه الخدمة الآن' : 'Schedule This Service Now'}</span>
-          </button>
+          {/* CTA Buttons: Book Now & View Gallery */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <button
+              onClick={() => onNavigate('gallery')}
+              className="w-full bg-[#10191c] border border-accent/30 text-accent h-14 rounded-2xl flex items-center justify-center gap-2 font-bold hover:bg-accent/10 active:scale-[0.99] transition-all cursor-pointer"
+            >
+              <Sparkles size={18} />
+              <span>{isAr ? 'عرض صور الحالات في المعرض' : 'View Cases in Gallery'}</span>
+            </button>
+
+            <button
+              onClick={() => onNavigate('booking', service.id)}
+              className="w-full bg-gradient-to-r from-[#03d4ed] to-[#14d8ff] h-14 rounded-2xl flex items-center justify-center gap-2 text-[#001f27] font-black hover:shadow-[0_0_25px_rgba(20,216,255,0.4)] active:scale-[0.99] transition-all cursor-pointer shadow-lg"
+            >
+              <Calendar size={18} />
+              <span>{isAr ? 'احجز موعداً لهذه الخدمة' : 'Schedule This Service'}</span>
+            </button>
+          </div>
         </div>
       </motion.div>
     </div>

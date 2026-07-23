@@ -185,12 +185,16 @@ export default function Home({onNavigate, locale, settings, doctor, services}: H
             onClick={() => onNavigate('service-details', findServiceId('white', 'e18cb8f0-15cc-4cbe-b4db-996ff2505ea1'))}
             animate={{y: [0, -6, 0]}}
             transition={{duration: 3.5, repeat: Infinity, delay: 0, ease: "easeInOut"}}
-            className="absolute left-8 top-[16%] w-[60px] h-[60px] bg-[#09151c]/90 border border-[#14d8ff]/50 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(20,216,255,0.4)] pointer-events-auto cursor-pointer hover:scale-110 active:scale-95 transition-all duration-300"
+            className="absolute left-8 top-[16%] w-[60px] h-[60px] bg-[#09151c]/90 border border-[#14d8ff]/50 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(20,216,255,0.4)] pointer-events-auto cursor-pointer hover:scale-110 active:scale-95 transition-all duration-300 group"
+            title={isAr ? "تبييض ورعاية الأسنان" : "Teeth Whitening"}
           >
             <svg viewBox="0 0 100 100" className="w-8 h-8 text-[#14d8ff]" fill="none" stroke="currentColor" strokeWidth="4">
               <path d="M 50 25 C 40 10, 15 10, 15 35 C 15 60, 50 85, 50 85 C 50 85, 85 60, 85 35 C 85 10, 60 10, 50 25 Z" strokeLinejoin="round" strokeLinecap="round" />
               <path d="M 50 35 C 43 35, 38 38, 38 45 C 38 52, 42 56, 44 64 C 44 67, 47 68, 49 67 C 50 66, 50 64, 50 62 C 50 64, 50 66, 51 67 C 53 68, 56 67, 56 64 C 58 56, 62 52, 62 45 C 62 38, 57 35, 50 35 Z" strokeWidth="2.5" strokeLinecap="round" />
             </svg>
+            <span className="absolute -bottom-5 text-[8px] font-bold text-[#14d8ff] bg-[#09151c]/90 px-1.5 py-0.5 rounded border border-[#14d8ff]/30 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+              {isAr ? 'تبييض' : 'Whitening'}
+            </span>
           </motion.button>
 
           {/* Node 2 (Dental Implant): Bottom Left */}
@@ -198,7 +202,8 @@ export default function Home({onNavigate, locale, settings, doctor, services}: H
             onClick={() => onNavigate('service-details', findServiceId('implant', 'e18cb8f0-15cc-4cbe-b4db-996ff2505ea3'))}
             animate={{y: [0, 5, 0]}}
             transition={{duration: 4, repeat: Infinity, delay: 0.8, ease: "easeInOut"}}
-            className="absolute left-4 bottom-[20%] w-[60px] h-[60px] bg-[#09151c]/90 border border-[#14d8ff]/50 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(20,216,255,0.4)] pointer-events-auto cursor-pointer hover:scale-110 active:scale-95 transition-all duration-300"
+            className="absolute left-4 bottom-[20%] w-[60px] h-[60px] bg-[#09151c]/90 border border-[#14d8ff]/50 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(20,216,255,0.4)] pointer-events-auto cursor-pointer hover:scale-110 active:scale-95 transition-all duration-300 group"
+            title={isAr ? "زراعة الأسنان الرقمية" : "Dental Implants"}
           >
             <svg viewBox="0 0 100 100" className="w-8 h-8 text-[#14d8ff]" fill="none" stroke="currentColor" strokeWidth="4">
               <path d="M 50 20 C 38 20, 32 23, 32 35 C 32 45, 38 48, 42 56 C 45 56, 55 56, 58 56 C 62 48, 68 45, 68 35 C 68 23, 62 20, 50 20 Z" strokeLinejoin="round" />
@@ -207,6 +212,9 @@ export default function Home({onNavigate, locale, settings, doctor, services}: H
               <path d="M 42 71 L 58 71" strokeWidth="4" strokeLinecap="round" />
               <path d="M 44 78 L 56 78" strokeWidth="4" strokeLinecap="round" />
             </svg>
+            <span className="absolute -bottom-5 text-[8px] font-bold text-[#14d8ff] bg-[#09151c]/90 px-1.5 py-0.5 rounded border border-[#14d8ff]/30 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+              {isAr ? 'زراعة' : 'Implants'}
+            </span>
           </motion.button>
 
           {/* Node 3 (Orthodontics Tooth): Top Right */}
@@ -214,7 +222,8 @@ export default function Home({onNavigate, locale, settings, doctor, services}: H
             onClick={() => onNavigate('service-details', findServiceId('aligner', 'e18cb8f0-15cc-4cbe-b4db-996ff2505ea4'))}
             animate={{y: [0, -5, 0]}}
             transition={{duration: 3.8, repeat: Infinity, delay: 1.5, ease: "easeInOut"}}
-            className="absolute right-8 top-[16%] w-[60px] h-[60px] bg-[#09151c]/90 border border-[#14d8ff]/50 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(20,216,255,0.4)] pointer-events-auto cursor-pointer hover:scale-110 active:scale-95 transition-all duration-300"
+            className="absolute right-8 top-[16%] w-[60px] h-[60px] bg-[#09151c]/90 border border-[#14d8ff]/50 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(20,216,255,0.4)] pointer-events-auto cursor-pointer hover:scale-110 active:scale-95 transition-all duration-300 group"
+            title={isAr ? "تقويم الأسنان غير المرئي" : "Orthodontics"}
           >
             <svg viewBox="0 0 100 100" className="w-8 h-8 text-[#14d8ff]" fill="none" stroke="currentColor" strokeWidth="4">
               <path d="M 50 20 C 32 20, 23 25, 23 40 C 23 53, 30 60, 33 79 C 34 86, 41 88, 45 85 C 47 83, 50 81, 50 75 C 50 81, 53 81, 55 85 C 59 88, 66 86, 67 79 C 70 60, 77 53, 77 40 C 77 25, 68 20, 50 20 Z" strokeLinecap="round" strokeLinejoin="round" />
@@ -224,6 +233,9 @@ export default function Home({onNavigate, locale, settings, doctor, services}: H
               <rect x="31" y="39" width="8" height="8" rx="1" fill="#14d8ff" stroke="none" />
               <rect x="61" y="39" width="8" height="8" rx="1" fill="#14d8ff" stroke="none" />
             </svg>
+            <span className="absolute -bottom-5 text-[8px] font-bold text-[#14d8ff] bg-[#09151c]/90 px-1.5 py-0.5 rounded border border-[#14d8ff]/30 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+              {isAr ? 'تقويم' : 'Aligners'}
+            </span>
           </motion.button>
 
           {/* Node 4 (Sparkly Tooth): Bottom Right */}
@@ -231,12 +243,16 @@ export default function Home({onNavigate, locale, settings, doctor, services}: H
             onClick={() => onNavigate('service-details', findServiceId('veneer', 'e18cb8f0-15cc-4cbe-b4db-996ff2505ea2'))}
             animate={{y: [0, 6, 0]}}
             transition={{duration: 4.2, repeat: Infinity, delay: 2.2, ease: "easeInOut"}}
-            className="absolute right-4 bottom-[20%] w-[60px] h-[60px] bg-[#09151c]/90 border border-[#14d8ff]/50 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(20,216,255,0.4)] pointer-events-auto cursor-pointer hover:scale-110 active:scale-95 transition-all duration-300"
+            className="absolute right-4 bottom-[20%] w-[60px] h-[60px] bg-[#09151c]/90 border border-[#14d8ff]/50 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(20,216,255,0.4)] pointer-events-auto cursor-pointer hover:scale-110 active:scale-95 transition-all duration-300 group"
+            title={isAr ? "الفينير وتصاميم الابتسامة" : "Veneers & Smile Design"}
           >
             <svg viewBox="0 0 100 100" className="w-8 h-8 text-[#14d8ff]" fill="none" stroke="currentColor" strokeWidth="4">
               <path d="M 50 20 C 32 20, 23 25, 23 40 C 23 53, 30 60, 33 79 C 34 86, 41 88, 45 85 C 47 83, 50 81, 50 75 C 50 81, 53 81, 55 85 C 59 88, 66 86, 67 79 C 70 60, 77 53, 77 40 C 77 25, 68 20, 50 20 Z" strokeLinecap="round" strokeLinejoin="round" />
               <path d="M 72 25 L 74 29 L 78 31 L 74 33 L 72 37 L 70 33 L 66 31 L 70 29 Z" fill="#14d8ff" stroke="none" />
             </svg>
+            <span className="absolute -bottom-5 text-[8px] font-bold text-[#14d8ff] bg-[#09151c]/90 px-1.5 py-0.5 rounded border border-[#14d8ff]/30 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+              {isAr ? 'فينير' : 'Veneers'}
+            </span>
           </motion.button>
         </div>
       </section>
@@ -324,6 +340,55 @@ export default function Home({onNavigate, locale, settings, doctor, services}: H
             </span>
           </button>
         ))}
+      </section>
+
+      {/* Quick Access Portals connecting Home to Services & Gallery */}
+      <section className="grid grid-cols-2 gap-3">
+        {/* Portal 1: All Services */}
+        <button
+          onClick={() => onNavigate('services')}
+          className="glass-card p-4 rounded-2xl border border-[#14d8ff]/20 bg-gradient-to-br from-[#081822]/90 to-[#030d12]/95 hover:border-[#14d8ff]/50 hover:scale-[1.02] active:scale-95 transition-all cursor-pointer flex flex-col justify-between text-start group"
+        >
+          <div className="flex items-center justify-between w-full mb-2">
+            <div className="w-10 h-10 rounded-xl bg-[#14d8ff]/10 border border-[#14d8ff]/30 flex items-center justify-center text-[#14d8ff] group-hover:scale-110 transition-transform">
+              <Globe size={20} />
+            </div>
+            <span className="text-[10px] font-bold text-[#14d8ff] bg-[#14d8ff]/10 px-2 py-0.5 rounded-full border border-[#14d8ff]/20">
+              {services?.length || 4}+ {isAr ? 'خدمات' : 'Services'}
+            </span>
+          </div>
+          <div>
+            <h3 className="text-sm font-bold text-white group-hover:text-[#14d8ff] transition-colors">
+              {isAr ? 'جميع الخدمات الطبية' : 'All Clinical Services'}
+            </h3>
+            <p className="text-[10px] text-[#859398] mt-0.5">
+              {isAr ? 'تصفح التقنيات والعلاجات' : 'Explore treatments & tech'}
+            </p>
+          </div>
+        </button>
+
+        {/* Portal 2: Gallery & Transformations */}
+        <button
+          onClick={() => onNavigate('gallery')}
+          className="glass-card p-4 rounded-2xl border border-[#14d8ff]/20 bg-gradient-to-br from-[#081822]/90 to-[#030d12]/95 hover:border-[#14d8ff]/50 hover:scale-[1.02] active:scale-95 transition-all cursor-pointer flex flex-col justify-between text-start group"
+        >
+          <div className="flex items-center justify-between w-full mb-2">
+            <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform">
+              <Shield size={20} />
+            </div>
+            <span className="text-[10px] font-bold text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded-full border border-purple-500/20">
+              {isAr ? 'قبل وبعد' : 'Before & After'}
+            </span>
+          </div>
+          <div>
+            <h3 className="text-sm font-bold text-white group-hover:text-purple-300 transition-colors">
+              {isAr ? 'معرض الصور والحالات' : 'Cases Gallery'}
+            </h3>
+            <p className="text-[10px] text-[#859398] mt-0.5">
+              {isAr ? 'شاهد نتائج العلاج الواقعية' : 'View real treatment cases'}
+            </p>
+          </div>
+        </button>
       </section>
 
       {/* Call to Action Booking Button */}

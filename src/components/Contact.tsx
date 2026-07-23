@@ -40,7 +40,7 @@ export default function Contact({locale, settings}: ContactProps) {
         {/* Map Card */}
         <div className="glass-card rounded-xl aspect-[4/3] relative overflow-hidden group">
           <img 
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCoKXEcyqsem-IaThQzsPTZCFqph6F-vKKg5i4UALBiIW_N8xQlgkcMYO1DVaILF_RUAHOV3V0ni8eC1h_MELEdklkAEJx1oe0aD1LxOi-Ra7tJOdqFG5zFamuLjYvh2RY2NRicITOAP3XQDG8j5w9e-k6d6h1yLxMIfo2f43nxdSTnbahhZfGjdeg33ovIOXIQ2Nx_35NAouGSx45MmKiAalwxiHdsnojpfJWaIn1SQzl-IrxA3UWDgtUutL2A2bbkKB2mj9uEF3c" 
+            src="https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&q=80&w=800" 
             className="w-full h-full object-cover opacity-60 filter grayscale saturate-150 contrast-125 group-hover:scale-105 transition-transform duration-700"
             alt="Clinic Map Location"
           />
@@ -51,7 +51,7 @@ export default function Contact({locale, settings}: ContactProps) {
               </span>
               <div className="flex items-center gap-2">
                 <span className="text-xs text-[#dde4e6] font-medium">
-                  {isAr ? (settings?.address_ar || 'جميرا، دبي، الإمارات') : (settings?.address_en || 'Jumeirah, Dubai, UAE')}
+                  {isAr ? (settings?.address_ar || 'شارع كوردستان، أربيل، العراق') : (settings?.address_en || 'Kurdistan Street, Erbil, Iraq')}
                 </span>
                 <span className="w-2 h-2 rounded-full bg-accent animate-ping shrink-0"></span>
               </div>
@@ -59,7 +59,7 @@ export default function Contact({locale, settings}: ContactProps) {
           </div>
           <div className={`absolute bottom-4 z-10 ${isAr ? 'left-4' : 'right-4'}`}>
             <a 
-              href="https://maps.google.com" 
+              href={settings?.google_map || 'https://maps.google.com/?q=Dr.+Mustafa+Alrifaie+Clinic+Erbil+Iraq'} 
               target="_blank" 
               rel="noopener noreferrer"
               className="bg-accent hover:opacity-90 text-[#001f27] px-5 py-2 rounded-xl font-bold text-[9px] uppercase tracking-wider shadow-lg shadow-accent/20 active:scale-95 transition-all cursor-pointer inline-block"
@@ -73,7 +73,7 @@ export default function Contact({locale, settings}: ContactProps) {
         {/* Contact Links */}
         <div className="space-y-4">
           <a 
-            href={`tel:${settings?.phone || '+97145551234'}`}
+            href={`tel:${settings?.phone || '+964661234567'}`}
             className="glass-card p-4 rounded-xl flex items-center gap-4 group hover:border-accent/40 transition-colors cursor-pointer"
           >
             <div className="w-12 h-12 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent group-hover:scale-110 transition-all shrink-0">
@@ -84,13 +84,13 @@ export default function Contact({locale, settings}: ContactProps) {
                 {isAr ? 'الهاتف المباشر للعيادة' : 'Direct Clinic Phone'}
               </p>
               <h3 className="text-base font-bold text-[#dde4e6]" dir="ltr">
-                {settings?.phone || '+971 4 555 1234'}
+                {settings?.phone || '+964 66 123 4567'}
               </h3>
             </div>
           </a>
 
           <a 
-            href={`https://wa.me/${(settings?.whatsapp || '971509876543').replace(/\+/g, '').replace(/\s/g, '')}`}
+            href={`https://wa.me/${(settings?.whatsapp || '964661234567').replace(/[^\d]/g, '')}`}
             target="_blank"
             rel="noreferrer"
             className="glass-card p-4 rounded-xl flex items-center gap-4 group hover:border-green-500/40 transition-colors cursor-pointer"
@@ -103,7 +103,7 @@ export default function Contact({locale, settings}: ContactProps) {
                 {isAr ? 'واتساب الاستشارات السريع' : 'Instant WhatsApp Consult'}
               </p>
               <h3 className="text-base font-bold text-[#dde4e6]" dir="ltr">
-                {settings?.whatsapp || '+971 50 987 6543'}
+                {settings?.whatsapp || '+964 66 123 4567'}
               </h3>
             </div>
           </a>

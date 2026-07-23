@@ -129,7 +129,7 @@ export default function App() {
           />
         );
       case 'gallery': 
-        return <Gallery locale={locale} gallery={galleryList} />;
+        return <Gallery locale={locale} gallery={galleryList} onNavigate={handleNavigate} />;
       case 'about': 
         return <About locale={locale} doctor={activeDoctor} />;
       case 'contact': 
@@ -461,12 +461,12 @@ export default function App() {
                     <Phone size={16} className="text-accent" />
                     <div>
                       <p className="text-[10px] text-[#859398] leading-none mb-0.5">{isAr ? 'رقم العيادة' : 'Clinic Telephone'}</p>
-                      <p className="text-xs font-bold text-[#dde4e6]" dir="ltr">{settings?.phone || '+971 4 555 1234'}</p>
+                      <p className="text-xs font-bold text-[#dde4e6]" dir="ltr">{settings?.phone || '+964 66 123 4567'}</p>
                     </div>
                   </a>
 
                   <a 
-                    href={`https://wa.me/${(settings?.whatsapp || '971509876543').replace(/\+/g, '').replace(/\s/g, '')}`}
+                    href={`https://wa.me/${(settings?.whatsapp || '964661234567').replace(/[^\d]/g, '')}`}
                     target="_blank"
                     rel="noreferrer"
                     className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 hover:border-green-500/30 transition-all cursor-pointer"
@@ -474,7 +474,7 @@ export default function App() {
                     <MessageSquare size={16} className="text-green-400" />
                     <div>
                       <p className="text-[10px] text-[#859398] leading-none mb-0.5">{isAr ? 'الواتساب الطبي' : 'Clinical WhatsApp'}</p>
-                      <p className="text-xs font-bold text-[#dde4e6]" dir="ltr">{settings?.whatsapp || '+971 50 987 6543'}</p>
+                      <p className="text-xs font-bold text-[#dde4e6]" dir="ltr">{settings?.whatsapp || '+964 66 123 4567'}</p>
                     </div>
                   </a>
 

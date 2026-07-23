@@ -1,6 +1,7 @@
 import {useState} from 'react';
 import {motion} from 'motion/react';
 import {Search, ArrowLeft, ArrowRight} from 'lucide-react';
+import SlowDownloadImage from './SlowDownloadImage';
 
 interface ServicesProps {
   locale: 'ar' | 'en';
@@ -77,10 +78,11 @@ export default function Services({locale, services, onNavigate}: ServicesProps) 
           >
             <div className="flex justify-between items-start mb-6">
               <div className="w-16 h-16 relative shrink-0">
-                <img 
+                <SlowDownloadImage 
                   src={service.src}
-                  className="w-full h-full object-contain filter drop-shadow-[0_0_10px_rgba(20,216,255,0.6)] group-hover:scale-110 transition-transform duration-500"
                   alt={service.en}
+                  containerClassName="w-full h-full rounded-xl bg-transparent"
+                  className="w-full h-full object-contain filter drop-shadow-[0_0_10px_rgba(20,216,255,0.6)] group-hover:scale-110 transition-transform duration-500"
                 />
               </div>
               {isAr ? (
