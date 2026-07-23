@@ -40,6 +40,26 @@ CREATE TABLE IF NOT EXISTS public.settings (
   CONSTRAINT settings_pkey PRIMARY KEY (id)
 );
 
+ALTER TABLE public.settings ADD COLUMN IF NOT EXISTS clinic_name_ar text;
+ALTER TABLE public.settings ADD COLUMN IF NOT EXISTS clinic_name_en text;
+ALTER TABLE public.settings ADD COLUMN IF NOT EXISTS slogan_ar text;
+ALTER TABLE public.settings ADD COLUMN IF NOT EXISTS slogan_en text;
+ALTER TABLE public.settings ADD COLUMN IF NOT EXISTS address_ar text;
+ALTER TABLE public.settings ADD COLUMN IF NOT EXISTS address_en text;
+ALTER TABLE public.settings ADD COLUMN IF NOT EXISTS working_hours_ar text;
+ALTER TABLE public.settings ADD COLUMN IF NOT EXISTS working_hours_en text;
+ALTER TABLE public.settings ADD COLUMN IF NOT EXISTS phone text;
+ALTER TABLE public.settings ADD COLUMN IF NOT EXISTS whatsapp text;
+ALTER TABLE public.settings ADD COLUMN IF NOT EXISTS email text;
+ALTER TABLE public.settings ADD COLUMN IF NOT EXISTS website text;
+ALTER TABLE public.settings ADD COLUMN IF NOT EXISTS google_map text;
+ALTER TABLE public.settings ADD COLUMN IF NOT EXISTS logo_url text;
+ALTER TABLE public.settings ADD COLUMN IF NOT EXISTS hero_image_url text;
+ALTER TABLE public.settings ADD COLUMN IF NOT EXISTS facebook text;
+ALTER TABLE public.settings ADD COLUMN IF NOT EXISTS instagram text;
+ALTER TABLE public.settings ADD COLUMN IF NOT EXISTS tiktok text;
+ALTER TABLE public.settings ADD COLUMN IF NOT EXISTS youtube text;
+
 -- ------------------------------------------------------------------------------
 -- 2. DOCTORS TABLE
 -- ------------------------------------------------------------------------------
@@ -64,6 +84,22 @@ CREATE TABLE IF NOT EXISTS public.doctors (
   CONSTRAINT doctors_pkey PRIMARY KEY (id)
 );
 
+ALTER TABLE public.doctors ADD COLUMN IF NOT EXISTS full_name_ar text;
+ALTER TABLE public.doctors ADD COLUMN IF NOT EXISTS full_name_en text;
+ALTER TABLE public.doctors ADD COLUMN IF NOT EXISTS title_ar text;
+ALTER TABLE public.doctors ADD COLUMN IF NOT EXISTS title_en text;
+ALTER TABLE public.doctors ADD COLUMN IF NOT EXISTS about_ar text;
+ALTER TABLE public.doctors ADD COLUMN IF NOT EXISTS about_en text;
+ALTER TABLE public.doctors ADD COLUMN IF NOT EXISTS qualifications_ar text;
+ALTER TABLE public.doctors ADD COLUMN IF NOT EXISTS qualifications_en text;
+ALTER TABLE public.doctors ADD COLUMN IF NOT EXISTS experience_years integer DEFAULT 0;
+ALTER TABLE public.doctors ADD COLUMN IF NOT EXISTS image_url text;
+ALTER TABLE public.doctors ADD COLUMN IF NOT EXISTS phone text;
+ALTER TABLE public.doctors ADD COLUMN IF NOT EXISTS email text;
+ALTER TABLE public.doctors ADD COLUMN IF NOT EXISTS whatsapp text;
+ALTER TABLE public.doctors ADD COLUMN IF NOT EXISTS facebook text;
+ALTER TABLE public.doctors ADD COLUMN IF NOT EXISTS instagram text;
+
 -- ------------------------------------------------------------------------------
 -- 3. SERVICES TABLE
 -- ------------------------------------------------------------------------------
@@ -84,6 +120,19 @@ CREATE TABLE IF NOT EXISTS public.services (
   CONSTRAINT services_pkey PRIMARY KEY (id)
 );
 
+ALTER TABLE public.services ADD COLUMN IF NOT EXISTS name_ar text;
+ALTER TABLE public.services ADD COLUMN IF NOT EXISTS name_en text;
+ALTER TABLE public.services ADD COLUMN IF NOT EXISTS short_desc_ar text;
+ALTER TABLE public.services ADD COLUMN IF NOT EXISTS short_desc_en text;
+ALTER TABLE public.services ADD COLUMN IF NOT EXISTS details_ar text;
+ALTER TABLE public.services ADD COLUMN IF NOT EXISTS details_en text;
+ALTER TABLE public.services ADD COLUMN IF NOT EXISTS benefits_ar text;
+ALTER TABLE public.services ADD COLUMN IF NOT EXISTS benefits_en text;
+ALTER TABLE public.services ADD COLUMN IF NOT EXISTS icon text;
+ALTER TABLE public.services ADD COLUMN IF NOT EXISTS image_url text;
+ALTER TABLE public.services ADD COLUMN IF NOT EXISTS sort_order integer DEFAULT 1;
+ALTER TABLE public.services ADD COLUMN IF NOT EXISTS active boolean DEFAULT true;
+
 -- ------------------------------------------------------------------------------
 -- 4. GALLERY TABLE
 -- ------------------------------------------------------------------------------
@@ -100,6 +149,14 @@ CREATE TABLE IF NOT EXISTS public.gallery (
   CONSTRAINT gallery_pkey PRIMARY KEY (id),
   CONSTRAINT gallery_service_id_fkey FOREIGN KEY (service_id) REFERENCES public.services(id) ON DELETE SET NULL
 );
+
+ALTER TABLE public.gallery ADD COLUMN IF NOT EXISTS service_id uuid;
+ALTER TABLE public.gallery ADD COLUMN IF NOT EXISTS category text;
+ALTER TABLE public.gallery ADD COLUMN IF NOT EXISTS title_ar text;
+ALTER TABLE public.gallery ADD COLUMN IF NOT EXISTS title_en text;
+ALTER TABLE public.gallery ADD COLUMN IF NOT EXISTS description_ar text;
+ALTER TABLE public.gallery ADD COLUMN IF NOT EXISTS description_en text;
+ALTER TABLE public.gallery ADD COLUMN IF NOT EXISTS image_url text;
 
 -- ------------------------------------------------------------------------------
 -- 5. APPOINTMENTS TABLE
@@ -120,6 +177,17 @@ CREATE TABLE IF NOT EXISTS public.appointments (
   CONSTRAINT appointments_pkey PRIMARY KEY (id),
   CONSTRAINT appointments_service_id_fkey FOREIGN KEY (service_id) REFERENCES public.services(id) ON DELETE SET NULL
 );
+
+ALTER TABLE public.appointments ADD COLUMN IF NOT EXISTS device_id text;
+ALTER TABLE public.appointments ADD COLUMN IF NOT EXISTS patient_name text;
+ALTER TABLE public.appointments ADD COLUMN IF NOT EXISTS phone text;
+ALTER TABLE public.appointments ADD COLUMN IF NOT EXISTS email text;
+ALTER TABLE public.appointments ADD COLUMN IF NOT EXISTS service_id uuid;
+ALTER TABLE public.appointments ADD COLUMN IF NOT EXISTS preferred_language text DEFAULT 'ar';
+ALTER TABLE public.appointments ADD COLUMN IF NOT EXISTS appointment_date date;
+ALTER TABLE public.appointments ADD COLUMN IF NOT EXISTS appointment_time time without time zone;
+ALTER TABLE public.appointments ADD COLUMN IF NOT EXISTS notes text;
+ALTER TABLE public.appointments ADD COLUMN IF NOT EXISTS status text DEFAULT 'pending';
 
 -- ==============================================================================
 -- ROW LEVEL SECURITY (RLS) POLICIES
@@ -155,7 +223,6 @@ CREATE POLICY "Allow public update for appointments" ON public.appointments FOR 
 
 DROP POLICY IF EXISTS "Allow public delete for appointments" ON public.appointments;
 CREATE POLICY "Allow public delete for appointments" ON public.appointments FOR DELETE USING (true);
-
 
 -- ==============================================================================
 -- SEED DATA POPULATION
@@ -244,7 +311,7 @@ INSERT INTO public.doctors (
   phone = EXCLUDED.phone,
   whatsapp = EXCLUDED.whatsapp;
 
--- 3. SEED SERVICES (strictly matching user schema columns: name, short_desc, details, benefits, icon, image_url, sort_order, active)
+-- 3. SEED SERVICES
 INSERT INTO public.services (
   id, name_ar, name_en, short_desc_ar, short_desc_en, details_ar, details_en, benefits_ar, benefits_en, icon, image_url, sort_order, active
 ) VALUES 
@@ -377,5 +444,5 @@ INSERT INTO public.gallery (
   image_url = EXCLUDED.image_url;
 
 -- ==============================================================================
--- ALL DONE! Perfect match for User Schema!
+-- ALL DONE! Safe to run on clean or existing Supabase schemas!
 -- ==============================================================================
