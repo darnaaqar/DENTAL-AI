@@ -302,15 +302,46 @@ export default function App() {
               </button>
             )}
 
-            {/* Dynamic Screen Title (for screens other than Home) */}
-            {activeTab !== 'home' && (
-              <div className="flex flex-col items-start leading-none gap-0.5 ml-1" dir={isAr ? 'rtl' : 'ltr'}>
-                <h1 className="text-sm font-bold text-[#aeecff] drop-shadow-[0_0_8px_rgba(20,216,255,0.4)]">
-                  {headerConfig.title}
-                </h1>
-                <span className="text-[8px] text-[#859398] uppercase tracking-wider font-semibold">
-                  {headerConfig.subtitle}
-                </span>
+            {/* Dynamic Screen Title & App Icon */}
+            {activeTab === 'home' ? (
+              <button 
+                onClick={() => handleNavigate('about')}
+                className="flex items-center gap-2.5 text-start cursor-pointer group"
+                title={isAr ? 'عن الدكتور' : 'Doctor Profile'}
+              >
+                <div className="w-9 h-9 rounded-full border-2 border-[#14d8ff]/60 p-0.5 shadow-[0_0_12px_rgba(20,216,255,0.4)] overflow-hidden shrink-0 group-hover:border-[#14d8ff] transition-all">
+                  <img 
+                    src={doctorImage} 
+                    alt="Dr. Mustafa Alrifaie" 
+                    className="w-full h-full object-cover rounded-full"
+                  />
+                </div>
+                <div className="flex flex-col leading-none" dir={isAr ? 'rtl' : 'ltr'}>
+                  <h1 className="text-xs font-extrabold text-[#aeecff] group-hover:text-white transition-colors drop-shadow-[0_0_8px_rgba(20,216,255,0.4)]">
+                    {isAr ? 'د. مصطفى الرفاعي' : 'Dr. Mustafa Al-Rifaie'}
+                  </h1>
+                  <span className="text-[8px] text-[#859398] uppercase tracking-wider font-semibold">
+                    {isAr ? 'طب وتجميل الأسنان' : 'Dental Care & Aesthetics'}
+                  </span>
+                </div>
+              </button>
+            ) : (
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => handleNavigate('about')}
+                  className="w-8 h-8 rounded-full border border-[#14d8ff]/40 overflow-hidden shrink-0 cursor-pointer"
+                  title={isAr ? 'عن الدكتور' : 'Doctor Profile'}
+                >
+                  <img src={doctorImage} alt="Dr. Mustafa" className="w-full h-full object-cover" />
+                </button>
+                <div className="flex flex-col items-start leading-none gap-0.5 ml-0.5" dir={isAr ? 'rtl' : 'ltr'}>
+                  <h1 className="text-sm font-bold text-[#aeecff] drop-shadow-[0_0_8px_rgba(20,216,255,0.4)]">
+                    {headerConfig.title}
+                  </h1>
+                  <span className="text-[8px] text-[#859398] uppercase tracking-wider font-semibold">
+                    {headerConfig.subtitle}
+                  </span>
+                </div>
               </div>
             )}
           </div>
