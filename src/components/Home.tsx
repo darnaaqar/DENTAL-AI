@@ -19,10 +19,13 @@ export default function Home({onNavigate, locale, settings, doctor, services}: H
   // Helper to find service ID by keyword / icon in case Supabase has different UUIDs
   const findServiceId = (keywordEn: string, fallbackId: string) => {
     if (!services || services.length === 0) return fallbackId;
+    const kw = keywordEn.toLowerCase();
     const found = services.find(s => 
-      s.name_en?.toLowerCase().includes(keywordEn.toLowerCase()) ||
-      s.icon?.toLowerCase().includes(keywordEn.toLowerCase())
-    );
+      s.name_en?.toLowerCase().includes(kw) ||
+      s.name_ar?.toLowerCase().includes(kw) ||
+      s.icon?.toLowerCase().includes(kw) ||
+      s.short_desc_en?.toLowerCase().includes(kw)
+    ) || services.find(s => s.id === fallbackId);
     return found ? found.id : fallbackId;
   };
 
@@ -182,7 +185,7 @@ export default function Home({onNavigate, locale, settings, doctor, services}: H
         <div className="absolute inset-0 pointer-events-none z-25">
           {/* Node 1 (Heart Tooth): Top Left */}
           <motion.button
-            onClick={() => onNavigate('service-details', findServiceId('white', 'e18cb8f0-15cc-4cbe-b4db-996ff2505ea1'))}
+            onClick={() => onNavigate('service-details', findServiceId('white', 'e18cb8f0-15cc-4cbe-b4db-996ff2505ea3'))}
             animate={{y: [0, -6, 0]}}
             transition={{duration: 3.5, repeat: Infinity, delay: 0, ease: "easeInOut"}}
             className="absolute left-8 top-[16%] w-[60px] h-[60px] bg-[#09151c]/90 border border-[#14d8ff]/50 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(20,216,255,0.4)] pointer-events-auto cursor-pointer hover:scale-110 active:scale-95 transition-all duration-300 group"
@@ -199,7 +202,7 @@ export default function Home({onNavigate, locale, settings, doctor, services}: H
 
           {/* Node 2 (Dental Implant): Bottom Left */}
           <motion.button
-            onClick={() => onNavigate('service-details', findServiceId('implant', 'e18cb8f0-15cc-4cbe-b4db-996ff2505ea3'))}
+            onClick={() => onNavigate('service-details', findServiceId('implant', 'e18cb8f0-15cc-4cbe-b4db-996ff2505ea1'))}
             animate={{y: [0, 5, 0]}}
             transition={{duration: 4, repeat: Infinity, delay: 0.8, ease: "easeInOut"}}
             className="absolute left-4 bottom-[20%] w-[60px] h-[60px] bg-[#09151c]/90 border border-[#14d8ff]/50 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(20,216,255,0.4)] pointer-events-auto cursor-pointer hover:scale-110 active:scale-95 transition-all duration-300 group"
@@ -276,7 +279,7 @@ export default function Home({onNavigate, locale, settings, doctor, services}: H
       <section className="grid grid-cols-4 gap-2.5">
         {[
           {
-            id: findServiceId('white', 'e18cb8f0-15cc-4cbe-b4db-996ff2505ea1'),
+            id: findServiceId('white', 'e18cb8f0-15cc-4cbe-b4db-996ff2505ea3'),
             labelAr: 'تبييض الأسنان',
             labelEn: 'Teeth Whitening',
             svg: (
@@ -300,7 +303,7 @@ export default function Home({onNavigate, locale, settings, doctor, services}: H
             )
           },
           {
-            id: findServiceId('implant', 'e18cb8f0-15cc-4cbe-b4db-996ff2505ea3'),
+            id: findServiceId('implant', 'e18cb8f0-15cc-4cbe-b4db-996ff2505ea1'),
             labelAr: 'زراعة الأسنان',
             labelEn: 'Dental Implants',
             svg: (
@@ -570,7 +573,7 @@ export default function Home({onNavigate, locale, settings, doctor, services}: H
                     <div className="space-y-2.5">
                       {/* WhatsApp */}
                       <a 
-                        href={`https://wa.me/${(settings?.whatsapp || '971509876543').replace(/\+/g, '').replace(/\s/g, '')}`}
+                        href={`https://wa.me/${(settings?.whatsapp || '964661234567').toString().replace(/\+/g, '').replace(/\s/g, '')}`}
                         target="_blank"
                         rel="noreferrer"
                         className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 hover:border-green-500/30 hover:bg-green-500/5 transition-all"
@@ -578,25 +581,25 @@ export default function Home({onNavigate, locale, settings, doctor, services}: H
                         <MessageSquare size={15} className="text-green-400 shrink-0" />
                         <div className="text-start">
                           <p className="text-[9px] text-[#859398] leading-none mb-0.5">{isAr ? "واتساب سريع" : "Fast WhatsApp"}</p>
-                          <p className="text-xs font-bold text-[#dde4e6]">{isAr ? "استشارة فورية" : "Instant Consult"}</p>
+                          <p className="text-xs font-bold text-[#dde4e6]">{settings?.whatsapp || '+964 66 123 4567'}</p>
                         </div>
                       </a>
 
                       {/* Phone */}
                       <a 
-                        href={`tel:${settings?.phone || '+97145551234'}`}
+                        href={`tel:${(settings?.phone || '+964661234567').toString().replace(/\s/g, '')}`}
                         className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 hover:border-accent/30 hover:bg-accent/5 transition-all"
                       >
                         <Phone size={15} className="text-accent shrink-0" />
                         <div className="text-start">
                           <p className="text-[9px] text-[#859398] leading-none mb-0.5">{isAr ? "اتصال فوري" : "Call Clinic"}</p>
-                          <p className="text-xs font-bold text-[#dde4e6]">{settings?.phone || '+971 4 555 1234'}</p>
+                          <p className="text-xs font-bold text-[#dde4e6]">{settings?.phone || '+964 66 123 4567'}</p>
                         </div>
                       </a>
 
                       {/* Map */}
                       <a 
-                        href={settings?.google_map || 'https://maps.google.com'}
+                        href={settings?.google_map || 'https://maps.google.com/?q=Dr.+Mustafa+Alrifaie+Clinic+Erbil+Iraq'}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 hover:border-accent/30 hover:bg-accent/5 transition-all"
@@ -604,7 +607,7 @@ export default function Home({onNavigate, locale, settings, doctor, services}: H
                         <MapPin size={15} className="text-accent shrink-0" />
                         <div className="text-start">
                           <p className="text-[9px] text-[#859398] leading-none mb-0.5">{isAr ? "الموقع الجغرافي" : "Maps Location"}</p>
-                          <p className="text-xs font-bold text-[#dde4e6] truncate max-w-[180px]">{isAr ? "جميرا، دبي" : "Jumeirah, Dubai"}</p>
+                          <p className="text-xs font-bold text-[#dde4e6] truncate max-w-[180px]">{isAr ? (settings?.address_ar || "أربيل، إقليم كردستان، العراق") : (settings?.address_en || "Erbil, Kurdistan Region, Iraq")}</p>
                         </div>
                       </a>
 

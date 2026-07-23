@@ -507,16 +507,16 @@ class _MainLayoutScreenState extends State<MainLayoutScreen> {
                 icon: Icons.phone_outlined,
                 color: const Color(0xFF14D8FF),
                 title: getTranslation('telephone')['text']!,
-                subtitle: _settings?['phone'] ?? '+971 4 555 1234',
-                onTap: () => launchUrl(Uri.parse('tel:${(_settings?['phone'] ?? '97145551234').replaceAll(' ', '')}')),
+                subtitle: _settings?['phone'] ?? '+964 66 123 4567',
+                onTap: () => launchUrl(Uri.parse('tel:${(_settings?['phone'] ?? '+964661234567').replaceAll(' ', '')}')),
               ),
               const SizedBox(height: 8),
               _buildDrawerActionCard(
                 icon: Icons.chat_bubble_outline,
                 color: Colors.green,
                 title: getTranslation('whatsapp')['text']!,
-                subtitle: _settings?['whatsapp'] ?? '+971 50 987 6543',
-                onTap: () => launchUrl(Uri.parse('https://wa.me/${(_settings?['whatsapp'] ?? '971509876543').replaceAll(' ', '').replaceAll('+', '')}')),
+                subtitle: _settings?['whatsapp'] ?? '+964 66 123 4567',
+                onTap: () => launchUrl(Uri.parse('https://wa.me/${(_settings?['whatsapp'] ?? '964661234567').replaceAll(' ', '').replaceAll('+', '')}')),
               ),
             ],
           ),
@@ -690,10 +690,10 @@ class HomeScreen extends StatelessWidget {
                     borderWidth: 3,
                   ),
                 ),
-                _buildOrbitNode(top: 40, left: 10, icon: Icons.favorite_border, onTap: () => onNavigate('services')),
-                _buildOrbitNode(bottom: 40, left: 10, icon: Icons.bolt_outlined, onTap: () => onNavigate('services')),
-                _buildOrbitNode(top: 30, right: 10, icon: Icons.search_outlined, onTap: () => onNavigate('services')),
-                _buildOrbitNode(bottom: 50, right: 10, icon: Icons.star_border_outlined, onTap: () => onNavigate('services')),
+                _buildOrbitNode(top: 40, left: 10, icon: Icons.auto_awesome, onTap: () => onNavigate('services')),
+                _buildOrbitNode(bottom: 40, left: 10, icon: Icons.dns_outlined, onTap: () => onNavigate('services')),
+                _buildOrbitNode(top: 30, right: 10, icon: Icons.grid_on_outlined, onTap: () => onNavigate('services')),
+                _buildOrbitNode(bottom: 50, right: 10, icon: Icons.shield_outlined, onTap: () => onNavigate('services')),
               ],
             ),
           ),
@@ -706,10 +706,10 @@ class HomeScreen extends StatelessWidget {
           const SizedBox(height: 24),
           Row(
             children: [
-              _buildServiceCard(arLabel: 'تبييض الأسنان', enLabel: 'Teeth Whitening', icon: Icons.auto_awesome),
-              _buildServiceCard(arLabel: 'الفينير', enLabel: 'Veneers', icon: Icons.shield_outlined),
-              _buildServiceCard(arLabel: 'زراعة الأسنان', enLabel: 'Dental Implants', icon: Icons.dns_outlined),
-              _buildServiceCard(arLabel: 'تقويم الأسنان', enLabel: 'Orthodontics', icon: Icons.grid_on_outlined),
+              _buildServiceCard(arLabel: 'تبييض الأسنان', enLabel: 'Teeth Whitening', icon: Icons.auto_awesome, onTap: () => onNavigate('services')),
+              _buildServiceCard(arLabel: 'الفينير', enLabel: 'Veneers', icon: Icons.shield_outlined, onTap: () => onNavigate('services')),
+              _buildServiceCard(arLabel: 'زراعة الأسنان', enLabel: 'Dental Implants', icon: Icons.dns_outlined, onTap: () => onNavigate('services')),
+              _buildServiceCard(arLabel: 'تقويم الأسنان', enLabel: 'Orthodontics', icon: Icons.grid_on_outlined, onTap: () => onNavigate('services')),
             ],
           ),
           const SizedBox(height: 28),
@@ -779,10 +779,10 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildServiceCard({required String arLabel, required String enLabel, required IconData icon}) {
+  Widget _buildServiceCard({required String arLabel, required String enLabel, required IconData icon, VoidCallback? onTap}) {
     return Expanded(
       child: GestureDetector(
-        onTap: () => onNavigate('services'),
+        onTap: onTap ?? () => onNavigate('services'),
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 4),
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
