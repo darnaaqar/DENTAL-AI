@@ -7,7 +7,10 @@ import Gallery from './components/Gallery';
 import Contact from './components/Contact';
 import Booking from './components/Booking';
 import ServiceDetails from './components/ServiceDetails';
-import { getSettings, getDoctors, getServices, getGallery, isSupabaseConfigured } from './supabaseClient';
+import UserProfileView from './components/UserProfileView';
+import FirebaseAuthModal from './components/FirebaseAuthModal';
+import { auth, getUserProfile, subscribeToAuthState, FirebaseUser, UserProfile } from './firebase';
+import { getSettings, getDoctors, getServices, getGallery, isFirebaseConfigured, forceSyncAllAppDataToFirebase } from './dbClient';
 import {
   Menu,
   X,
@@ -24,7 +27,9 @@ import {
   Image,
   User,
   Calendar,
-  Mail
+  Mail,
+  Database,
+  Lock
 } from 'lucide-react';
 import {motion, AnimatePresence} from 'motion/react';
 import doctorImage from './assets/images/doctor_mustafa_uploaded.png';
@@ -33,6 +38,11 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<Tab>('home');
   const [locale, setLocale] = useState<'ar' | 'en'>('ar');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  // Firebase state
+  const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   // Supabase states
   const [settings, setSettings] = useState<any>(null);
@@ -43,6 +53,15 @@ export default function App() {
 
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
   const [preselectedBookingServiceId, setPreselectedBookingServiceId] = useState<string | null>(null);
+
+  // Track Firebase Auth state
+  useEffect(() => {
+    const unsubscribe = subscribeToAuthState((user, profile) => {
+      setCurrentUser(user);
+      setUserProfile(profile);
+    });
+    return () => unsubscribe();
+  }, []);
 
   const handleNavigate = (tab: Tab, serviceId?: string) => {
     if (tab === 'service-details' && serviceId) {
@@ -59,6 +78,9 @@ export default function App() {
   useEffect(() => {
     async function loadAllClinicData() {
       try {
+        // Ensure Firestore is initialized and synced with data
+        forceSyncAllAppDataToFirebase().catch(e => console.warn('Background sync note:', e));
+
         const [settingsData, doctorsData, servicesData, galleryData] = await Promise.all([
           getSettings(),
           getDoctors(),
@@ -70,7 +92,7 @@ export default function App() {
         setServicesList(servicesData);
         setGalleryList(galleryData);
       } catch (err) {
-        console.error('Supabase clinic loading error:', err);
+        console.error('Firebase clinic loading error:', err);
       } finally {
         setIsLoading(false);
       }
@@ -83,6 +105,11 @@ export default function App() {
       id: 'home' as Tab,
       label: isAr ? 'الرئيسية' : 'Home',
       icon: HomeIcon,
+    },
+    {
+      id: 'profile' as Tab,
+      label: isAr ? 'تسجيل وحساب Firebase' : 'Firebase Profile',
+      icon: Database,
     },
     {
       id: 'services' as Tab,
@@ -116,6 +143,38 @@ export default function App() {
     switch (activeTab) {
       case 'home': 
         return <Home onNavigate={handleNavigate} locale={locale} settings={settings} doctor={activeDoctor} services={servicesList} />;
+      case 'profile':
+        return currentUser ? (
+          <UserProfileView 
+            isAr={isAr} 
+            currentUser={currentUser} 
+            userProfile={userProfile} 
+            onOpenAuthModal={() => setIsAuthModalOpen(true)} 
+          />
+        ) : (
+          <div className="flex flex-col items-center justify-center p-8 text-center space-y-6 max-w-lg mx-auto my-12 bg-slate-900/80 border border-amber-500/30 rounded-3xl text-slate-100 shadow-2xl">
+            <div className="w-16 h-16 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400">
+              <Database className="w-8 h-8" />
+            </div>
+            <div className="space-y-2">
+              <h2 className="text-xl font-bold text-slate-100">
+                {isAr ? 'ربط وتعبئة بيانات حساب Firebase' : 'Firebase Database Connection'}
+              </h2>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                {isAr 
+                  ? 'قم بتسجيل حساب جديد أو تسجيل الدخول للربط المباشر مع قاعدة بيانات Firebase Firestore ومتابعة مواعيدك.'
+                  : 'Register a new account or sign in to connect directly to Firebase Firestore and sync your appointments.'}
+              </p>
+            </div>
+            <button
+              onClick={() => setIsAuthModalOpen(true)}
+              className="px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold rounded-xl text-xs shadow-lg shadow-amber-500/20 transition-all flex items-center gap-2"
+            >
+              <Database className="w-4 h-4" />
+              {isAr ? 'تسجيل جديد / تسجيل دخول Firebase' : 'Register / Login with Firebase'}
+            </button>
+          </div>
+        );
       case 'services': 
         return <Services locale={locale} services={servicesList} onNavigate={handleNavigate} />;
       case 'service-details':
@@ -168,12 +227,12 @@ export default function App() {
         </div>
         <div className="space-y-2 max-w-md">
           <h2 className="text-xl font-bold text-white">
-            {isAr ? 'خطأ في الاتصال بقاعدة البيانات' : 'Supabase Connection Error'}
+            {isAr ? 'خطأ في الاتصال بقاعدة البيانات' : 'Firebase Connection Error'}
           </h2>
           <p className="text-xs text-[#859398] leading-relaxed">
             {isAr 
-              ? 'لم يتم العثور على بيانات العيادة في قاعدة بيانات Supabase. يرجى التأكد من ربط المشروع وإدخال السجلات المطلوبة في جداول (settings, doctors, services, gallery).'
-              : 'Could not retrieve clinic details from Supabase. Please ensure your Supabase integration is configured and the database tables (settings, doctors, services, gallery) are fully populated.'}
+              ? 'لم يتم العثور على بيانات العيادة في قاعدة بيانات Firebase Firestore. يرجى التأكد من ربط المشروع وإدخال السجلات المطلوبة في مجموعات (settings, doctors, services, gallery).'
+              : 'Could not retrieve clinic details from Firebase. Please ensure your Firebase integration is configured and the Firestore collections (settings, doctors, services, gallery) are accessible.'}
           </p>
         </div>
         <button 
@@ -346,28 +405,47 @@ export default function App() {
             )}
           </div>
 
-          {/* Right: Bilingual Selector Pill */}
-          <div className="flex items-center bg-[#07303d]/40 border border-[#14d8ff]/20 rounded-full p-0.5 text-xs font-semibold shadow-[0_2px_12px_rgba(20,216,255,0.05)] w-[150px] h-9">
+          {/* Right: Firebase Auth Button & Bilingual Selector Pill */}
+          <div className="flex items-center gap-2">
             <button
-              onClick={() => setLocale('ar')}
-              className={`flex-1 h-full rounded-full transition-all duration-300 cursor-pointer flex items-center justify-center text-[11px] ${
-                locale === 'ar'
-                  ? 'bg-gradient-to-r from-[#03d4ed] to-[#14d8ff] text-white font-extrabold shadow-[0_0_12px_rgba(20,216,255,0.4)]'
-                  : 'text-[#dde4e6] hover:text-white opacity-80'
-              }`}
+              onClick={() => {
+                if (currentUser) {
+                  handleNavigate('profile');
+                } else {
+                  setIsAuthModalOpen(true);
+                }
+              }}
+              className="flex items-center justify-center w-9 h-9 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 hover:bg-amber-500/20 transition-all cursor-pointer relative"
+              title={currentUser ? (isAr ? 'حساب Firebase' : 'Firebase Profile') : (isAr ? 'تسجيل في Firebase' : 'Register Firebase')}
             >
-              عربي
+              <Database className="w-4 h-4" />
+              {currentUser && (
+                <span className="absolute -top-0.5 -end-0.5 w-2.5 h-2.5 bg-emerald-500 border-2 border-[#000a12] rounded-full" />
+              )}
             </button>
-            <button
-              onClick={() => setLocale('en')}
-              className={`flex-1 h-full rounded-full transition-all duration-300 cursor-pointer flex items-center justify-center text-[11px] ${
-                locale === 'en'
-                  ? 'bg-gradient-to-r from-[#03d4ed] to-[#14d8ff] text-white font-extrabold shadow-[0_0_12px_rgba(20,216,255,0.4)]'
-                  : 'text-[#dde4e6] hover:text-white opacity-80'
-              }`}
-            >
-              English
-            </button>
+
+            <div className="flex items-center bg-[#07303d]/40 border border-[#14d8ff]/20 rounded-full p-0.5 text-xs font-semibold shadow-[0_2px_12px_rgba(20,216,255,0.05)] w-[140px] h-9">
+              <button
+                onClick={() => setLocale('ar')}
+                className={`flex-1 h-full rounded-full transition-all duration-300 cursor-pointer flex items-center justify-center text-[11px] ${
+                  locale === 'ar'
+                    ? 'bg-gradient-to-r from-[#03d4ed] to-[#14d8ff] text-white font-extrabold shadow-[0_0_12px_rgba(20,216,255,0.4)]'
+                    : 'text-[#dde4e6] hover:text-white opacity-80'
+                }`}
+              >
+                عربي
+              </button>
+              <button
+                onClick={() => setLocale('en')}
+                className={`flex-1 h-full rounded-full transition-all duration-300 cursor-pointer flex items-center justify-center text-[11px] ${
+                  locale === 'en'
+                    ? 'bg-gradient-to-r from-[#03d4ed] to-[#14d8ff] text-white font-extrabold shadow-[0_0_12px_rgba(20,216,255,0.4)]'
+                    : 'text-[#dde4e6] hover:text-white opacity-80'
+                }`}
+              >
+                English
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -568,6 +646,20 @@ export default function App() {
           </>
         )}
       </AnimatePresence>
+
+      {/* Firebase Auth Modal */}
+      {isAuthModalOpen && (
+        <FirebaseAuthModal
+          isAr={isAr}
+          currentUser={currentUser}
+          userProfile={userProfile}
+          onClose={() => setIsAuthModalOpen(false)}
+          onSuccess={() => {
+            setIsAuthModalOpen(false);
+            setActiveTab('profile');
+          }}
+        />
+      )}
     </div>
   );
 }

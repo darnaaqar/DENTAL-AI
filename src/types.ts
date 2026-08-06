@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-export type Tab = 'home' | 'services' | 'gallery' | 'about' | 'contact' | 'booking' | 'service-details';
+export type Tab = 'home' | 'services' | 'gallery' | 'about' | 'contact' | 'booking' | 'service-details' | 'profile';
 
 export interface Service {
   id: string;

@@ -1,0 +1,108 @@
+{
+  "entities": {
+    "settings": {
+      "title": "Clinic Settings",
+      "description": "General information, contact, and working hours for the clinic",
+      "properties": {
+        "clinic_name_ar": { "type": "string" },
+        "clinic_name_en": { "type": "string" },
+        "slogan_ar": { "type": "string" },
+        "slogan_en": { "type": "string" },
+        "address_ar": { "type": "string" },
+        "address_en": { "type": "string" },
+        "working_hours_ar": { "type": "string" },
+        "working_hours_en": { "type": "string" },
+        "phone": { "type": "string" },
+        "whatsapp": { "type": "string" },
+        "email": { "type": "string" },
+        "website": { "type": "string" },
+        "google_map": { "type": "string" },
+        "logo_url": { "type": "string" },
+        "hero_image_url": { "type": "string" },
+        "facebook": { "type": "string" },
+        "instagram": { "type": "string" },
+        "tiktok": { "type": "string" },
+        "youtube": { "type": "string" }
+      }
+    },
+    "doctors": {
+      "title": "Clinic Doctors",
+      "description": "List of medical team members and doctors",
+      "properties": {
+        "full_name_ar": { "type": "string" },
+        "full_name_en": { "type": "string" },
+        "title_ar": { "type": "string" },
+        "title_en": { "type": "string" },
+        "about_ar": { "type": "string" },
+        "about_en": { "type": "string" },
+        "qualifications_ar": { "type": "string" },
+        "qualifications_en": { "type": "string" },
+        "experience_years": { "type": "number" },
+        "image_url": { "type": "string" },
+        "phone": { "type": "string" },
+        "email": { "type": "string" },
+        "whatsapp": { "type": "string font" }
+      }
+    },
+    "services": {
+      "title": "Clinic Services",
+      "description": "Dental procedures and services provided by the clinic",
+      "properties": {
+        "name_ar": { "type": "string" },
+        "name_en": { "type": "string" },
+        "short_desc_ar": { "type": "string" },
+        "short_desc_en": { "type": "string" },
+        "details_ar": { "type": "string" },
+        "details_en": { "type": "string" },
+        "benefits_ar": { "type": "string" },
+        "benefits_en": { "type": "string" },
+        "icon": { "type": "string" },
+        "image_url": { "type": "string" },
+        "sort_order": { "type": "number" },
+        "active": { "type": "boolean" }
+      }
+    },
+    "gallery": {
+      "title": "Gallery Items",
+      "description": "Before/after photos and clinic facilities images",
+      "properties": {
+        "service_id": { "type": "string" },
+        "category": { "type": "string" },
+        "title_ar": { "type": "string" },
+        "title_en": { "type": "string" },
+        "description_ar": { "type": "string" },
+        "description_en": { "type": "string" },
+        "image_url": { "type": "string" }
+      }
+    },
+    "appointments": {
+      "title": "Appointments",
+      "description": "Patient appointments booked online or via user profile",
+      "properties": {
+        "device_id": { "type": "string" },
+        "patient_name": { "type": "string" },
+        "phone": { "type": "string" },
+        "email": { "type": "string" },
+        "service_id": { "type": "string" },
+        "preferred_language": { "type": "string" },
+        "appointment_date": { "type": "string" },
+        "appointment_time": { "type": "string" },
+        "notes": { "type": "string" },
+        "status": { "type": "string" },
+        "patientUid": { "type": "string" }
+      }
+    },
+    "users": {
+      "title": "User Profiles",
+      "description": "Registered clinic patient profiles",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "phone": { "type": "string font" },
+        "role": { "type": "string" },
+        "createdAt": { "type": "string" }
+      }
+    }
+  }
+}
