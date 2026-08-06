@@ -43,7 +43,6 @@ const databaseId = firebaseConfig.firestoreDatabaseId && firebaseConfig.firestor
   : undefined;
 
 export const db = databaseId ? getFirestore(app, databaseId) : getFirestore(app);
-export const defaultDb = getFirestore(app);
 
 export interface UserProfile {
   uid: string;
@@ -260,89 +259,66 @@ let isSeeded = false;
  */
 export async function forceSyncAllAppDataToFirebase() {
   try {
-    // Ensure active auth session so authenticated rules pass seamlessly
+    // Ensure active auth session if needed
     if (!auth.currentUser) {
       try {
         await signInAnonymously(auth);
       } catch (authErr) {
-        console.warn('Anonymous sign-in prior to sync notice:', authErr);
+        console.warn('Anonymous sign-in notice:', authErr);
       }
     }
 
-    const dbsToSync = [db];
-    if (defaultDb && defaultDb !== db) {
-      dbsToSync.push(defaultDb);
+    const batch = writeBatch(db);
+
+    // 1. Settings
+    const settingsRef = doc(db, 'settings', 'clinic_data');
+    batch.set(settingsRef, DEFAULT_SETTINGS, { merge: true });
+
+    // 2. Doctors
+    for (const doctor of DEFAULT_DOCTORS) {
+      const docRef = doc(db, 'doctors', doctor.id);
+      batch.set(docRef, doctor, { merge: true });
     }
 
-    for (const targetDb of dbsToSync) {
-      try {
-        const batch = writeBatch(targetDb);
-
-        // 1. Settings
-        const settingsRef = doc(targetDb, 'settings', 'clinic_data');
-        batch.set(settingsRef, DEFAULT_SETTINGS, { merge: true });
-
-        // 2. Doctors
-        for (const doctor of DEFAULT_DOCTORS) {
-          const docRef = doc(targetDb, 'doctors', doctor.id);
-          batch.set(docRef, doctor, { merge: true });
-        }
-
-        // 3. Services
-        for (const service of DEFAULT_SERVICES) {
-          const docRef = doc(targetDb, 'services', service.id);
-          batch.set(docRef, service, { merge: true });
-        }
-
-        // 4. Gallery
-        for (const item of DEFAULT_GALLERY) {
-          const docRef = doc(targetDb, 'gallery', item.id);
-          batch.set(docRef, item, { merge: true });
-        }
-
-        // 5. Initial Sample User
-        const sampleUserRef = doc(targetDb, 'users', 'sample_patient_01');
-        batch.set(sampleUserRef, {
-          uid: 'sample_patient_01',
-          email: 'patient@example.com',
-          displayName: 'مريض تجريبي (Sample Patient)',
-          phone: '+964 750 123 4567',
-          role: 'patient',
-          createdAt: new Date().toISOString()
-        }, { merge: true });
-
-        // 6. Initial Sample Appointment
-        const sampleApptRef = doc(targetDb, 'appointments', 'sample_appt_01');
-        batch.set(sampleApptRef, {
-          patient_name: 'مريض تجريبي (Sample Patient)',
-          patientPhone: '+964 750 123 4567',
-          serviceName: 'تنظيف وتلميع الأسنان',
-          doctorName: 'د. مصطفى الرفاعي',
-          date: '2026-08-10',
-          time: '10:00 AM',
-          status: 'confirmed',
-          notes: 'موعد استشاري أولي',
-          createdAt: new Date().toISOString()
-        }, { merge: true });
-
-        // Commit batch
-        await batch.commit();
-        console.log('⚡ Batch sync successfully committed 6 collections!');
-      } catch (dbErr) {
-        console.warn('Batch sync fallback to setDoc:', dbErr);
-        // Fallback to individual setDoc calls
-        await setDoc(doc(targetDb, 'settings', 'clinic_data'), DEFAULT_SETTINGS, { merge: true });
-        for (const doctor of DEFAULT_DOCTORS) {
-          await setDoc(doc(targetDb, 'doctors', doctor.id), doctor, { merge: true });
-        }
-        for (const service of DEFAULT_SERVICES) {
-          await setDoc(doc(targetDb, 'services', service.id), service, { merge: true });
-        }
-        for (const item of DEFAULT_GALLERY) {
-          await setDoc(doc(targetDb, 'gallery', item.id), item, { merge: true });
-        }
-      }
+    // 3. Services
+    for (const service of DEFAULT_SERVICES) {
+      const docRef = doc(db, 'services', service.id);
+      batch.set(docRef, service, { merge: true });
     }
+
+    // 4. Gallery
+    for (const item of DEFAULT_GALLERY) {
+      const docRef = doc(db, 'gallery', item.id);
+      batch.set(docRef, item, { merge: true });
+    }
+
+    // 5. Initial Sample User
+    const sampleUserRef = doc(db, 'users', 'sample_patient_01');
+    batch.set(sampleUserRef, {
+      uid: 'sample_patient_01',
+      email: 'patient@example.com',
+      displayName: 'مريض تجريبي (Sample Patient)',
+      phone: '+964 750 123 4567',
+      role: 'patient',
+      createdAt: new Date().toISOString()
+    }, { merge: true });
+
+    // 6. Initial Sample Appointment
+    const sampleApptRef = doc(db, 'appointments', 'sample_appt_01');
+    batch.set(sampleApptRef, {
+      patient_name: 'مريض تجريبي (Sample Patient)',
+      patientPhone: '+964 750 123 4567',
+      serviceName: 'تنظيف وتلميع الأسنان',
+      doctorName: 'د. مصطفى الرفاعي',
+      date: '2026-08-10',
+      time: '10:00 AM',
+      status: 'confirmed',
+      notes: 'موعد استشاري أولي',
+      createdAt: new Date().toISOString()
+    }, { merge: true });
+
+    // Commit batch atomically to target database instance
+    await batch.commit();
 
     // Cache locally
     settingsHiveBox.put('clinic_data', DEFAULT_SETTINGS);
@@ -351,11 +327,11 @@ export async function forceSyncAllAppDataToFirebase() {
     galleryHiveBox.put('gallery_list', DEFAULT_GALLERY);
 
     isSeeded = true;
+    console.log('⚡ Fast batch sync committed all 6 collections to Firestore database!');
     return { success: true, count: DEFAULT_SERVICES.length + DEFAULT_DOCTORS.length + DEFAULT_GALLERY.length + 3 };
   } catch (err: any) {
-    console.error('Error force syncing data to Firebase batch:', err);
-
-    // Fallback: Individual setDoc calls if writeBatch has unexpected issue
+    console.error('Error force syncing data to Firebase:', err);
+    // Fallback: Individual setDoc calls if writeBatch has an issue
     try {
       await setDoc(doc(db, 'settings', 'clinic_data'), DEFAULT_SETTINGS, { merge: true });
       for (const doctor of DEFAULT_DOCTORS) {
