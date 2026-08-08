@@ -1,51 +1,78 @@
-name: Build Android APK
+name: Build & Release Android APK
 
 on:
   push:
-    branches: [ "**" ]
-  workflow_dispatch:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
 
 jobs:
-  build-android:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
-
-      - name: Set up JDK 17
+      - name: Set up Java Development Kit (JDK)
         uses: actions/setup-java@v4
         with:
+          distribution: 'zulu'
           java-version: '17'
-          distribution: 'temurin'
 
-      - name: Install Dependencies
-        run: npm ci || npm install
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.x'
+          channel: 'stable'
+          cache: true
 
-      - name: Build Web App
-        run: npm run build
-
-      - name: Add and Sync Capacitor Android
+      - name: Create Flutter App Shell
         run: |
-          npx cap add android || true
-          npx cap sync android
+          flutter create --org com.example.dentalclinic --project-name mustafa_alrifaie flutter_project
 
-      - name: Grant Execute Permission for Gradlew
-        run: chmod +x android/gradlew
-
-      - name: Build Debug APK
+      - name: Copy Custom Flutter Code
         run: |
-          cd android
-          ./gradlew assembleDebug
+          cp pubspec.yaml flutter_project/pubspec.yaml
+          cp flutter_main.dart flutter_project/lib/main.dart
+          mkdir -p flutter_project/src/assets/images
+          cp -r src/assets/images/* flutter_project/src/assets/images/ || true
 
-      - name: Upload APK Artifact
+      - name: Configure Android Internet Permissions
+        run: |
+          python3 -c "
+          import os
+          path = 'flutter_project/android/app/src/main/AndroidManifest.xml'
+          if os.path.exists(path):
+              with open(path, 'r') as f:
+                  text = f.read()
+              if 'android.permission.INTERNET' not in text:
+                  text = text.replace('<application', '    <uses-permission android:name=\"android.permission.INTERNET\" />\n    <application')
+                  with open(path, 'w') as f:
+                      f.write(text)
+                  print('Internet permission successfully injected into AndroidManifest.xml')
+              else:
+                  print('Internet permission already present')
+          else:
+              print('ERROR: AndroidManifest.xml not found at', path)
+          "
+
+      - name: Get Dependencies
+        working-directory: flutter_project
+        run: flutter pub get
+
+      - name: Generate App Launcher Icons
+        working-directory: flutter_project
+        run: dart run flutter_launcher_icons
+
+      - name: Build Optimized Release APKs
+        working-directory: flutter_project
+        run: |
+          flutter build apk --release
+          flutter build apk --release --split-per-abi
+
+      - name: Upload APK Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: DentalAI-Clinic-APK
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          name: mustafa-alrifaie-release-apks
+          path: flutter_project/build/app/outputs/flutter-apk/*.apk

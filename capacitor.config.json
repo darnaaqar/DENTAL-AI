@@ -1,8 +1,0 @@
-{
-  "appId": "com.dentalai.clinic",
-  "appName": "Dental AI Clinic",
-  "webDir": "dist",
-  "server": {
-    "androidScheme": "https"
-  }
-}
